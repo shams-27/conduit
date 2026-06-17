@@ -32,11 +32,9 @@ searchBar.addEventListener('keyup', (e) => {
 let savedLinks = JSON.parse(localStorage.getItem('study_companion_links')) || [];
 
 function getFaviconUrl(domain) {
-    // Check if we have a manual override
     if (customIconMap[domain]) {
         return customIconMap[domain];
     }
-    // Otherwise, use the service
     return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
 }
 
@@ -133,3 +131,52 @@ function displayStaticLinksIcons() {
 }
 
 displayStaticLinksIcons();
+
+const menuItems = document.querySelectorAll('.menu-list li');
+
+function applyCategoryFilter(targetId) {
+    resourceCards.forEach(card => {
+        if (targetId === 'all' || card.getAttribute('id') === targetId) {
+            card.style.display = "block";
+        } else {
+            card.style.display = "none";
+        }
+    });
+}
+
+menuItems.forEach(item => {
+    item.addEventListener('click', () => {
+        menuItems.forEach(i => i.classList.remove('active'));
+
+        item.classList.add('active');
+
+        const target = item.getAttribute('data-target');
+        applyCategoryFilter(target);
+
+        if (searchBar.value !== '') {
+            searchBar.value = '';
+        }
+    });
+});
+
+searchBar.addEventListener('keyup', (e) => {
+    const term = e.target.value.toLowerCase();
+
+    if (term === '') {
+        const activeTarget = document.querySelector('.menu-list li.active').getAttribute('data-target');
+        applyCategoryFilter(activeTarget);
+        return;
+    }
+
+    resourceCards.forEach(card => {
+        const categoryData = card.getAttribute('data-category');
+        const keywords = categoryData ? categoryData.toLowerCase() : "";
+        const contentText = card.textContent.toLowerCase();
+
+        if (keywords.includes(term) || contentText.includes(term)) {
+            card.style.display = "block";
+        } else {
+            card.style.display = "none";
+        }
+    });
+});
