@@ -16,9 +16,21 @@
         </header>
 
         <div class="main-layout">
+            <aside class="nav-sidebar">
+                <h3>Categories</h3>
+                <ul id="category-menu" class="menu-list">
+                    <li class="active" data-target="all">All Resources</li>
+                    <li data-target="ai-assistants">AI Assistants</li>
+                    <li data-target="learning-media">Learning & Media</li>
+                    <li data-target="google-tools">Google Tools</li>
+                    <li data-target="toolbox">Toolbox</li>
+                    <li data-target="communication">Communication</li>
+                    <li data-target="custom-bookmarks">Custom Bookmarks</li>
+                </ul>
+            </aside>
+        
             <main class="resources-grid">
-
-                <section class="card">
+                <section class="card" id="ai-assistants" data-category="ai chat bots">
                     <h3>AI Assistants</h3>
                     <ul class="link-list">
                         <li><a href="https://claude.ai" target="_blank">Claude AI</a></li>
@@ -29,8 +41,8 @@
                         <li><a href="https://chat.deepseek.com" target="_blank">DeepSeek</a></li>
                     </ul>
                 </section>
-
-                <section class="card">
+        
+                <section class="card" id="learning-media" data-category="video code tutorials">
                     <h3>Learning & Media</h3>
                     <ul class="link-list">
                         <li><a href="https://www.youtube.com" target="_blank">YouTube</a></li>
@@ -38,8 +50,8 @@
                         <li><a href="https://www.w3schools.com" target="_blank">W3Schools</a></li>
                     </ul>
                 </section>
-
-                <section class="card">
+        
+                <section class="card" id="google-tools" data-category="workspace office documents">
                     <h3>Google Tools</h3>
                     <ul class="link-list">
                         <li><a href="https://drive.google.com" target="_blank">Google Drive</a></li>
@@ -48,8 +60,8 @@
                         <li><a href="https://slides.google.com" target="_blank">Google Slides</a></li>
                     </ul>
                 </section>
-
-                <section class="card">
+        
+                <section class="card" id="toolbox" data-category="utilities github pdf writing">
                     <h3>Toolbox</h3>
                     <ul class="link-list">
                         <li><a href="https://github.com" target="_blank">GitHub</a></li>
@@ -57,22 +69,22 @@
                         <li><a href="https://quillbot.com/" target="_blank">Quillbot</a></li>
                     </ul>
                 </section>
-
-                <section class="card">
+        
+                <section class="card" id="communication" data-category="email social media">
                     <h3>Communication</h3>
                     <ul class="link-list">
                         <li><a href="https://www.gmail.com" target="_blank">Gmail</a></li>
                         <li><a href="https://www.facebook.com/" target="_blank">Facebook</a></li>
                     </ul>
                 </section>
-
-                <section class="card">
+        
+                <section class="card" id="custom-bookmarks" data-category="custom personal favorites">
                     <h3>Custom Bookmarks</h3>
                     <ul class="link-list" id="custom-links-list">
                     </ul>
                 </section>
             </main>
-
+        
             <aside class="sidebar">
                 <div class="tool-box">
                     <h4>Add Custom Link</h4>
@@ -82,7 +94,7 @@
                         <button type="submit" class="btn">Save Link</button>
                     </form>
                 </div>
-
+        
                 <div class="tool-box">
                     <h4>Scratchpad</h4>
                     <textarea id="scratchpad"
