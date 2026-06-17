@@ -6,6 +6,14 @@ const linkUrl = document.getElementById('link-url');
 const customLinksList = document.getElementById('custom-links-list');
 const scratchpad = document.getElementById('scratchpad');
 
+const customIconMap = {
+    "docs.google.com": "https://img.icons8.com/color/96/google-docs--v1.png",
+    "sheets.google.com": "https://img.icons8.com/color/96/google-sheets.png",
+    "slides.google.com": "https://img.icons8.com/color/96/google-slides.png",
+    "drive.google.com": "https://img.icons8.com/color/96/google-drive.png",
+    "github.com": "https://github.githubassets.com/favicons/favicon.svg",
+};
+
 searchBar.addEventListener('keyup', (e) => {
     const term = e.target.value.toLowerCase();
 
@@ -22,6 +30,15 @@ searchBar.addEventListener('keyup', (e) => {
 });
 
 let savedLinks = JSON.parse(localStorage.getItem('study_companion_links')) || [];
+
+function getFaviconUrl(domain) {
+    // Check if we have a manual override
+    if (customIconMap[domain]) {
+        return customIconMap[domain];
+    }
+    // Otherwise, use the service
+    return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+}
 
 function displayCustomLinks() {
     customLinksList.innerHTML = '';
@@ -41,7 +58,7 @@ function displayCustomLinks() {
             domain = ''; 
         }
 
-        const faviconUrl = `https://unavatar.io/${domain}`;
+        const faviconUrl = getFaviconUrl(domain);
 
         li.innerHTML = `
             <div class="link-wrapper">
@@ -98,7 +115,7 @@ function displayStaticLinksIcons() {
             return; 
         }
 
-        const faviconUrl = `https://unavatar.io/${domain}`;
+        const faviconUrl = getFaviconUrl(domain);
 
         const wrapper = document.createElement('div');
         wrapper.className = 'link-wrapper';
