@@ -1,0 +1,218 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;800&display=swap');
+
+:root {
+    --bg-dark: #001a17;
+    --card-bg: #012d28;
+    --accent-butter: #ffefb3;
+    --text-main: #ffffff;
+    --text-muted: #c2dedb;
+    --border-color: #044b42;
+    --delete-red: #ff8787;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'JetBrains Mono', monospace;
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    min-height: 100vh;
+    padding: 40px 20px;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+header {
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    color: var(--accent-butter);
+    margin-bottom: 5px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+header p {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+}
+
+#search-bar {
+    width: 100%;
+    max-width: 600px;
+    padding: 14px 20px;
+    background-color: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-main);
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+#search-bar:focus {
+    border-color: var(--accent-butter);
+    box-shadow: 0 0 10px rgba(255, 239, 179, 0.2);
+}
+
+.main-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 30px;
+}
+
+.resources-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background-color: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    padding: 24px;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent-butter);
+}
+
+.card h3 {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    color: var(--accent-butter);
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 8px;
+}
+
+.link-list {
+    list-style: none;
+}
+
+.link-list li {
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.link-list a {
+    color: var(--text-main);
+    text-decoration: none;
+    font-weight: 500;
+    border-bottom: 1px dashed transparent;
+    transition: all 0.2s;
+}
+
+.link-list a:hover {
+    color: var(--accent-butter);
+    border-bottom-color: var(--accent-butter);
+}
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.tool-box {
+    background-color: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.tool-box h4 {
+    margin-bottom: 15px;
+    font-size: 1rem;
+    color: var(--accent-butter);
+}
+
+#bookmark-form input,
+#scratchpad {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--bg-dark);
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-main);
+    margin-bottom: 12px;
+    font-family: inherit;
+}
+
+#bookmark-form input:focus,
+#scratchpad:focus {
+    border-color: var(--accent-butter);
+    outline: none;
+}
+
+#scratchpad {
+    height: 180px;
+    resize: none;
+    font-family: inherit;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.btn {
+    width: 100%;
+    background-color: var(--accent-butter);
+    color: var(--bg-dark);
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn:hover {
+    background-color: #ffffff;
+}
+
+.delete-link-btn {
+    background: none;
+    border: none;
+    color: var(--delete-red);
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: bold;
+    padding: 0 5px;
+}
+
+.delete-link-btn:hover {
+    color: #ff4d4d;
+}
+
+.link-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.favicon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 4px;
+}
+
+@media (max-width: 850px) {
+    .main-layout {
+        grid-template-columns: 1fr;
+    }
+}

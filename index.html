@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conduit</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Conduit</h1>
+            <input type="text" id="search-bar" placeholder="Type to filter resources (e.g., AI, Docs)...">
+        </header>
+
+        <div class="main-layout">
+            <main class="resources-grid">
+
+                <section class="card" data-category="ai tools logic">
+                    <h3>AI Assistants</h3>
+                    <ul class="link-list">
+                        <li><a href="https://chatgpt.com" target="_blank">ChatGPT</a></li>
+                        <li><a href="https://claude.ai" target="_blank">Claude AI</a></li>
+                        <li><a href="https://gemini.google.com" target="_blank">Gemini</a></li>
+                    </ul>
+                </section>
+
+                <section class="card" data-category="youtube tutorials video">
+                    <h3>Learning & Media</h3>
+                    <ul class="link-list">
+                        <li><a href="https://www.youtube.com" target="_blank">YouTube</a></li>
+                        <li><a href="https://github.com" target="_blank">GitHub</a></li>
+                    </ul>
+                </section>
+
+                <section class="card" data-category="custom personal favorites">
+                    <h3>Custom Bookmarks</h3>
+                    <ul class="link-list" id="custom-links-list">
+                    </ul>
+                </section>
+            </main>
+
+            <aside class="sidebar">
+                <div class="tool-box">
+                    <h4>Add Custom Link</h4>
+                    <form id="bookmark-form">
+                        <input type="text" id="link-name" placeholder="Link Name (e.g., Uni Portal)" required>
+                        <input type="url" id="link-url" placeholder="URL (https://...)" required>
+                        <button type="submit" class="btn">Save Link</button>
+                    </form>
+                </div>
+
+                <div class="tool-box">
+                    <h4>Scratchpad</h4>
+                    <textarea id="scratchpad"
+                        placeholder="Drop temporary code snippets, assignment dates, or commands here..."></textarea>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
