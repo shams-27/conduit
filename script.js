@@ -1,3 +1,6 @@
+import { GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
 const searchBar = document.getElementById('search-bar');
 const resourceCards = document.querySelectorAll('.card');
 const bookmarkForm = document.getElementById('bookmark-form');
@@ -5,6 +8,11 @@ const linkName = document.getElementById('link-name');
 const linkUrl = document.getElementById('link-url');
 const customLinksList = document.getElementById('custom-links-list');
 const scratchpad = document.getElementById('scratchpad');
+const provider = new GoogleAuthProvider();
+const loginBtn = document.getElementById('login-btn');
+const userProfile = document.getElementById('user-profile');
+const userNameSpan = document.getElementById('user-name');
+const logoutBtn = document.getElementById('logout-btn');
 
 const customIconMap = {
     "docs.google.com": "https://img.icons8.com/color/96/google-docs--v1.png",
@@ -55,7 +63,7 @@ function displayCustomLinks() {
         try {
             domain = new URL(link.url).hostname;
         } catch (e) {
-            domain = ''; 
+            domain = '';
         }
 
         const faviconUrl = getFaviconUrl(domain);
@@ -83,8 +91,9 @@ bookmarkForm.addEventListener('submit', (e) => {
 
     savedLinks.push(newLink);
     localStorage.setItem('study_companion_links', JSON.stringify(savedLinks));
-
     displayCustomLinks();
+
+    saveUserDataToCloud();
 
     linkName.value = '';
     linkUrl.value = '';
@@ -94,12 +103,19 @@ window.deleteLink = function (index) {
     savedLinks.splice(index, 1);
     localStorage.setItem('study_companion_links', JSON.stringify(savedLinks));
     displayCustomLinks();
+    saveUserDataToCloud();
 }
 
 scratchpad.value = localStorage.getItem('study_companion_scratchpad') || '';
 
+let typingTimer;
 scratchpad.addEventListener('input', (e) => {
     localStorage.setItem('study_companion_scratchpad', e.target.value);
+
+    clearTimeout(typingTimer);
+    typingTimer = setTimeout(() => {
+        saveUserDataToCloud();
+    }, 1000);
 });
 
 displayCustomLinks();
@@ -112,7 +128,7 @@ function displayStaticLinksIcons() {
         try {
             domain = new URL(link.href).hostname;
         } catch (e) {
-            return; 
+            return;
         }
 
         const faviconUrl = getFaviconUrl(domain);
@@ -182,3 +198,61 @@ searchBar.addEventListener('keyup', (e) => {
         }
     });
 });
+
+async function saveUserDataToCloud() {
+    if (!window.auth.currentUser) return;
+
+    try {
+        const userId = window.auth.currentUser.uid;
+        await setDoc(doc(window.db, "users", userId), {
+            links: savedLinks,
+            scratchpadText: scratchpad.value,
+            updatedAt: new Date()
+        });
+        console.log("Cloud synchronized successfully!");
+    } catch (e) {
+        console.error("Error syncing with cloud: ", e);
+    }
+}
+
+onAuthStateChanged(window.auth, async (user) => {
+    const loginBtn = document.getElementById('login-btn');
+    const userProfile = document.getElementById('user-profile');
+    const userNameSpan = document.getElementById('user-name');
+
+    if (user) {
+        loginBtn.style.display = 'none';
+        userProfile.style.display = 'flex';
+        userNameSpan.textContent = `Hi, ${user.displayName || 'User'}`;
+
+        const docRef = doc(window.db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            savedLinks = data.links || [];
+            scratchpad.value = data.scratchpadText || '';
+        } else {
+            savedLinks = JSON.parse(localStorage.getItem('study_companion_links')) || [];
+            scratchpad.value = localStorage.getItem('study_companion_scratchpad') || '';
+            await saveUserDataToCloud();
+        }
+        displayCustomLinks();
+    } else {
+        loginBtn.style.display = 'block';
+        userProfile.style.display = 'none';
+        userNameSpan.textContent = '';
+
+        savedLinks = JSON.parse(localStorage.getItem('study_companion_links')) || [];
+        scratchpad.value = localStorage.getItem('study_companion_scratchpad') || '';
+        displayCustomLinks();
+    }
+});
+
+logoutBtn.onclick = () => {
+    signOut(window.auth).catch((error) => console.error("Logout Error:", error));
+};
+
+document.getElementById('login-btn').onclick = () => {
+    signInWithPopup(window.auth, provider);
+};
