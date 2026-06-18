@@ -281,3 +281,31 @@ logoutBtn.onclick = () => {
 document.getElementById('login-btn').onclick = () => {
     signInWithPopup(window.auth, provider);
 };
+
+const modal = document.getElementById('add-link-modal');
+const openModalBtn = document.getElementById('open-modal-btn');
+const closeModalBtn = document.getElementById('close-modal-btn');
+
+openModalBtn.addEventListener('click', () => {
+    modal.classList.add('show');
+});
+
+const closeModal = () => {
+    modal.classList.remove('show');
+};
+
+closeModalBtn.addEventListener('click', closeModal);
+
+modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+        closeModal();
+    }
+});
+
+document.getElementById('bookmark-form').addEventListener('submit', () => {
+    document.getElementById('add-link-modal').classList.remove('show');
+
+    setTimeout(() => {
+        document.getElementById('bookmark-form').reset();
+    }, 100);
+});

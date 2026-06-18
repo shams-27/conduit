@@ -110,19 +110,35 @@
                 </section>
 
                 <section class="card" id="custom-bookmarks" data-category="custom personal favorites">
-                    <h3>Custom Bookmarks</h3>
-
-                    <div class="tool-box" style="margin-bottom: 20px;">
-                        <form id="bookmark-form">
-                            <input type="text" id="link-name" placeholder="Link Name (e.g., Uni Portal)" required>
-                            <input type="url" id="link-url" placeholder="URL (https://...)" required>
-                            <button type="submit" class="btn">Save Link</button>
-                        </form>
+                    <div class="section-header"
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 style="margin: 0;">Custom Bookmarks</h3>
+                        <button id="open-modal-btn" class="btn">+ Add Link</button>
                     </div>
-
+                
                     <ul class="link-list" id="custom-links-list">
                     </ul>
                 </section>
+                
+                <div id="add-link-modal" class="modal-overlay">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Add New Bookmark</h3>
+                            <button id="close-modal-btn" class="close-btn">&times;</button>
+                        </div>
+                
+                        <form id="bookmark-form">
+                            <div class="input-group">
+                                <input type="text" id="link-name" placeholder="Link Name (e.g., Uni Portal)" required>
+                            </div>
+                            <div class="input-group">
+                                <input type="url" id="link-url" placeholder="URL (https://...)" required>
+                            </div>
+                            <button type="submit" class="btn" style="width: 100%; margin-top: 10px;">Save Link</button>
+                        </form>
+                
+                    </div>          
+                </div>
             </main>
 
             <aside class="sidebar">
