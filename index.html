@@ -16,9 +16,21 @@
 
             <div class="auth-container">
                 <button id="login-btn" class="btn" style="padding: 14px 20px;">Login with Google</button>
+
                 <div id="user-profile" style="display: none;">
-                    <span id="user-name"></span>
-                    <button id="logout-btn" class="logout-btn">Logout</button>
+                    <div class="profile-trigger" id="profile-trigger">
+                        <img id="user-avatar" class="user-avatar" src="" alt="" onerror="this.style.display='none'">
+                        <span id="user-name"></span>
+                        <span class="dropdown-arrow">▼</span>
+                    </div>
+
+                    <div class="dropdown-menu" id="dropdown-menu">
+                        <div class="dropdown-item sync-status">
+                            <span class="status-dot"></span> Cloud Synced
+                        </div>
+                        <hr class="dropdown-divider">
+                        <button id="logout-btn" class="dropdown-item logout-action">Logout</button>
+                    </div>
                 </div>
             </div>
         </header>
