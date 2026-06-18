@@ -13,6 +13,14 @@
         <header>
             <h1>Conduit</h1>
             <input type="text" id="search-bar" placeholder="Type to filter resources (e.g., AI, Docs)...">
+
+            <div class="auth-container">
+                <button id="login-btn" class="btn" style="padding: 14px 20px;">Login with Google</button>
+                <div id="user-profile" style="display: none;">
+                    <span id="user-name"></span>
+                    <button id="logout-btn" class="logout-btn">Logout</button>
+                </div>
+            </div>
         </header>
 
         <div class="main-layout">
@@ -29,7 +37,7 @@
                     <li data-target="custom-bookmarks">Custom Bookmarks</li>
                 </ul>
             </aside>
-        
+
             <main class="resources-grid">
                 <section class="card" id="ai-assistants">
                     <h3>AI Assistants</h3>
@@ -42,7 +50,7 @@
                         <li><a href="https://chat.deepseek.com" target="_blank">DeepSeek</a></li>
                     </ul>
                 </section>
-        
+
                 <section class="card" id="learning-media">
                     <h3>Learning & Media</h3>
                     <ul class="link-list">
@@ -52,7 +60,7 @@
                         <li><a href="https://visualgo.net" target="_blank">VisuAlgo</a></li>
                     </ul>
                 </section>
-        
+
                 <section class="card" id="google-tools">
                     <h3>Google Tools</h3>
                     <ul class="link-list">
@@ -63,7 +71,7 @@
                         <li><a href="https://slides.google.com" target="_blank">Google Slides</a></li>
                     </ul>
                 </section>
-        
+
                 <section class="card" id="toolbox">
                     <h3>Toolbox</h3>
                     <ul class="link-list">
@@ -72,7 +80,7 @@
                         <li><a href="https://quillbot.com" target="_blank">Quillbot</a></li>
                     </ul>
                 </section>
-        
+
                 <section class="card" id="communication">
                     <h3>Communication</h3>
                     <ul class="link-list">
@@ -88,7 +96,7 @@
                         <li><a href="https://www.linkedin.com" target="_blank">LinkedIn</a></li>
                     </ul>
                 </section>
-        
+
                 <section class="card" id="custom-bookmarks" data-category="custom personal favorites">
                     <h3>Custom Bookmarks</h3>
 
@@ -97,15 +105,15 @@
                             <input type="text" id="link-name" placeholder="Link Name (e.g., Uni Portal)" required>
                             <input type="url" id="link-url" placeholder="URL (https://...)" required>
                             <button type="submit" class="btn">Save Link</button>
-                        </form>          
+                        </form>
                     </div>
 
                     <ul class="link-list" id="custom-links-list">
                     </ul>
                 </section>
             </main>
-        
-            <aside class="sidebar">      
+
+            <aside class="sidebar">
                 <div class="tool-box">
                     <h4>Scratchpad</h4>
                     <textarea id="scratchpad"
@@ -115,7 +123,27 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAjn1LOK-UMVqT8x-lWtx2Y0BDFUReXix0",
+            authDomain: "conduit-app-909cf.firebaseapp.com",
+            projectId: "conduit-app-909cf",
+            storageBucket: "conduit-app-909cf.firebasestorage.app",
+            messagingSenderId: "507506125188",
+            appId: "1:507506125188:web:01957e6ec95ea08d6915d1",
+            measurementId: "G-T0BGHL0F6Q"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        window.auth = getAuth(app);
+        window.db = getFirestore(app);
+    </script>
+
+    <script type="module" src="script.js"></script>
 </body>
 
 </html>
