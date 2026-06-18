@@ -1,5 +1,5 @@
 import { GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { doc, getDoc, setDoc, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const searchBar = document.getElementById('search-bar');
 const resourceCards = document.querySelectorAll('.card');
@@ -242,7 +242,10 @@ onAuthStateChanged(window.auth, async (user) => {
             const data = docSnap.data();
             savedLinks = data.links || [];
             scratchpad.value = data.scratchpadText || '';
-        } else {
+
+            localStorage.setItem('study_companion_links', JSON.stringify(savedLinks));
+            localStorage.setItem('study_companion_scratchpad', scratchpad.value);
+        }  else {
             savedLinks = JSON.parse(localStorage.getItem('study_companion_links')) || [];
             scratchpad.value = localStorage.getItem('study_companion_scratchpad') || '';
             await saveUserDataToCloud();
