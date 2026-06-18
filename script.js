@@ -219,11 +219,21 @@ onAuthStateChanged(window.auth, async (user) => {
     const loginBtn = document.getElementById('login-btn');
     const userProfile = document.getElementById('user-profile');
     const userNameSpan = document.getElementById('user-name');
+    const userAvatar = document.getElementById('user-avatar');
 
     if (user) {
         loginBtn.style.display = 'none';
         userProfile.style.display = 'flex';
-        userNameSpan.textContent = `Hi, ${user.displayName || 'User'}`;
+
+        const firstName = user.displayName ? user.displayName.split(' ')[0] : 'User';
+        userNameSpan.textContent = `Hi, ${firstName}`;
+
+        if (user.photoURL) {
+            userAvatar.src = user.photoURL;
+            userAvatar.style.display = 'block';
+        } else {
+            userAvatar.style.display = 'none';
+        }
 
         const docRef = doc(window.db, "users", user.uid);
         const docSnap = await getDoc(docRef);
@@ -247,6 +257,21 @@ onAuthStateChanged(window.auth, async (user) => {
         scratchpad.value = localStorage.getItem('study_companion_scratchpad') || '';
         displayCustomLinks();
     }
+});
+
+const profileTrigger = document.getElementById('profile-trigger');
+const dropdownMenu = document.getElementById('dropdown-menu');
+const userProfileContainer = document.getElementById('user-profile');
+
+profileTrigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    dropdownMenu.classList.toggle('show');
+    userProfileContainer.classList.toggle('active');
+});
+
+document.addEventListener('click', () => {
+    dropdownMenu.classList.remove('show');
+    userProfileContainer.classList.remove('active');
 });
 
 logoutBtn.onclick = () => {
