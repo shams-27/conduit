@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;800&family=Lobster+Two:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
 :root {
     --bg-dark: #001a17;
@@ -40,11 +40,15 @@ header {
 }
 
 header h1 {
-    font-size: 2.5rem;
+    font-family: 'Lobster Two', sans-serif;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 3.8rem;
     color: var(--accent-butter);
     margin-bottom: 0;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     text-align: center;
+    transform: translateY(2px);
 }
 
 header p {
@@ -55,7 +59,7 @@ header p {
 
 #search-bar {
     width: 100%;
-    max-width: 100%;
+    height: 52px;
     padding: 14px 20px;
     background-color: var(--card-bg);
     border: 2px solid var(--border-color);
@@ -63,6 +67,7 @@ header p {
     color: var(--text-main);
     font-size: 1rem;
     outline: none;
+    box-sizing: border-box;
     transition: all 0.2s ease;
 }
 
@@ -276,6 +281,54 @@ header p {
     background-color: var(--border-color);
     color: var(--accent-butter);
     font-weight: 600;
+}
+
+/* --- Authentication Layout Styles --- */
+.auth-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
+}
+
+#user-profile {
+    background-color: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    width: 100%;
+    height: 52px;
+    box-sizing: border-box;
+}
+
+#user-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: var(--accent-butter);
+    white-space: nowrap;
+}
+
+.logout-btn {
+    background-color: rgba(255, 135, 135, 0.1);
+    color: var(--delete-red);
+    border: 1px solid var(--delete-red);
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+    background-color: var(--delete-red);
+    color: var(--bg-dark);
 }
 
 @media (max-width: 1000px) {
