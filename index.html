@@ -25,12 +25,13 @@
                     <li data-target="google-tools">Google Tools</li>
                     <li data-target="toolbox">Toolbox</li>
                     <li data-target="communication">Communication</li>
+                    <li data-target="careee-interships">Career & Internships</li>
                     <li data-target="custom-bookmarks">Custom Bookmarks</li>
                 </ul>
             </aside>
         
             <main class="resources-grid">
-                <section class="card" id="ai-assistants" data-category="ai chat bots">
+                <section class="card" id="ai-assistants">
                     <h3>AI Assistants</h3>
                     <ul class="link-list">
                         <li><a href="https://claude.ai" target="_blank">Claude AI</a></li>
@@ -42,18 +43,20 @@
                     </ul>
                 </section>
         
-                <section class="card" id="learning-media" data-category="video code tutorials">
+                <section class="card" id="learning-media">
                     <h3>Learning & Media</h3>
                     <ul class="link-list">
                         <li><a href="https://www.youtube.com" target="_blank">YouTube</a></li>
                         <li><a href="https://www.geeksforgeeks.org" target="_blank">GeeksforGeeks</a></li>
                         <li><a href="https://www.w3schools.com" target="_blank">W3Schools</a></li>
+                        <li><a href="https://visualgo.net" target="_blank">VisuAlgo</a></li>
                     </ul>
                 </section>
         
-                <section class="card" id="google-tools" data-category="workspace office documents">
+                <section class="card" id="google-tools">
                     <h3>Google Tools</h3>
                     <ul class="link-list">
+                        <li><a href="https://www.gmail.com" target="_blank">Gmail</a></li>
                         <li><a href="https://drive.google.com" target="_blank">Google Drive</a></li>
                         <li><a href="https://docs.google.com" target="_blank">Google Docs</a></li>
                         <li><a href="https://sheets.google.com" target="_blank">Google Sheets</a></li>
@@ -61,40 +64,48 @@
                     </ul>
                 </section>
         
-                <section class="card" id="toolbox" data-category="utilities github pdf writing">
+                <section class="card" id="toolbox">
                     <h3>Toolbox</h3>
                     <ul class="link-list">
                         <li><a href="https://github.com" target="_blank">GitHub</a></li>
                         <li><a href="https://www.ilovepdf.com" target="_blank">iLovePDF</a></li>
-                        <li><a href="https://quillbot.com/" target="_blank">Quillbot</a></li>
+                        <li><a href="https://quillbot.com" target="_blank">Quillbot</a></li>
                     </ul>
                 </section>
         
-                <section class="card" id="communication" data-category="email social media">
+                <section class="card" id="communication">
                     <h3>Communication</h3>
                     <ul class="link-list">
-                        <li><a href="https://www.gmail.com" target="_blank">Gmail</a></li>
-                        <li><a href="https://www.facebook.com/" target="_blank">Facebook</a></li>
+                        <li><a href="https://www.facebook.com" target="_blank">Facebook</a></li>
+                        <li><a href="https://web.whatsapp.com" target="_blank">WhatsApp</a></li>
+                    </ul>
+                </section>
+
+                <section class="card" id="careee-interships">
+                    <h3>Career & Internships</h3>
+                    <ul class="link-list">
+                        <li><a href="https://www.levels.fyi" target="_blank">Levels.fyi</a></li>
+                        <li><a href="https://www.linkedin.com" target="_blank">LinkedIn</a></li>
                     </ul>
                 </section>
         
                 <section class="card" id="custom-bookmarks" data-category="custom personal favorites">
                     <h3>Custom Bookmarks</h3>
+
+                    <div class="tool-box" style="margin-bottom: 20px;">
+                        <form id="bookmark-form">
+                            <input type="text" id="link-name" placeholder="Link Name (e.g., Uni Portal)" required>
+                            <input type="url" id="link-url" placeholder="URL (https://...)" required>
+                            <button type="submit" class="btn">Save Link</button>
+                        </form>          
+                    </div>
+
                     <ul class="link-list" id="custom-links-list">
                     </ul>
                 </section>
             </main>
         
-            <aside class="sidebar">
-                <div class="tool-box">
-                    <h4>Add Custom Link</h4>
-                    <form id="bookmark-form">
-                        <input type="text" id="link-name" placeholder="Link Name (e.g., Uni Portal)" required>
-                        <input type="url" id="link-url" placeholder="URL (https://...)" required>
-                        <button type="submit" class="btn">Save Link</button>
-                    </form>
-                </div>
-        
+            <aside class="sidebar">      
                 <div class="tool-box">
                     <h4>Scratchpad</h4>
                     <textarea id="scratchpad"
