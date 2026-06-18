@@ -71,6 +71,21 @@ header p {
     box-shadow: 0 0 10px rgba(255, 239, 179, 0.2);
 }
 
+#custom-bookmarks .tool-box {
+    border: none;
+    padding: 0;
+    margin-bottom: 20px;
+}
+
+#custom-bookmarks #bookmark-form {
+    display: flex;
+    gap: 10px;
+}
+
+#custom-bookmarks #bookmark-form input {
+    margin-bottom: 0;
+}
+
 .main-layout {
     display: grid;
     grid-template-columns: 220px 1fr 300px;
