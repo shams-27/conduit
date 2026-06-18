@@ -1,283 +1,456 @@
-import { GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;800&family=Lobster+Two:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
-const searchBar = document.getElementById('search-bar');
-const resourceCards = document.querySelectorAll('.card');
-const bookmarkForm = document.getElementById('bookmark-form');
-const linkName = document.getElementById('link-name');
-const linkUrl = document.getElementById('link-url');
-const customLinksList = document.getElementById('custom-links-list');
-const scratchpad = document.getElementById('scratchpad');
-const provider = new GoogleAuthProvider();
-const loginBtn = document.getElementById('login-btn');
-const userProfile = document.getElementById('user-profile');
-const userNameSpan = document.getElementById('user-name');
-const logoutBtn = document.getElementById('logout-btn');
+:root {
+    --bg-dark: #001a17;
+    --card-bg: #012d28;
+    --accent-butter: #ffefb3;
+    --text-main: #ffffff;
+    --text-muted: #c2dedb;
+    --border-color: #044b42;
+    --delete-red: #ff8787;
+}
 
-const customIconMap = {
-    "docs.google.com": "https://img.icons8.com/color/96/google-docs--v1.png",
-    "sheets.google.com": "https://img.icons8.com/color/96/google-sheets.png",
-    "slides.google.com": "https://img.icons8.com/color/96/google-slides.png",
-    "drive.google.com": "https://img.icons8.com/color/96/google-drive.png",
-    "www.gmail.com": "https://img.icons8.com/color/96/gmail.png",
-    "github.com": "https://github.githubassets.com/favicons/favicon.svg",
-    "web.whatsapp.com": "https://img.icons8.com/color/96/whatsapp.png",
-};
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-searchBar.addEventListener('keyup', (e) => {
-    const term = e.target.value.toLowerCase();
+body {
+    font-family: 'JetBrains Mono', monospace;
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    min-height: 100vh;
+    padding: 40px 20px;
+    background-image: radial-gradient(rgba(255, 239, 179, 0.07) 3px, transparent 1px);
+    background-size: 24px 24px;
+}
 
-    resourceCards.forEach(card => {
-        const keywords = card.getAttribute('data-category').toLowerCase();
-        const contentText = card.textContent.toLowerCase();
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
 
-        if (keywords.includes(term) || contentText.includes(term)) {
-            card.style.display = "block";
-        } else {
-            card.style.display = "none";
-        }
-    });
-});
+header {
+    display: grid;
+    grid-template-columns: 220px 1fr 300px;
+    gap: 30px;
+    align-items: center;
+    margin-bottom: 40px;
+}
 
-let savedLinks = JSON.parse(localStorage.getItem('study_companion_links')) || [];
+header h1 {
+    font-family: 'Lobster Two', sans-serif;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 3.8rem;
+    color: var(--accent-butter);
+    margin-bottom: 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    transform: translateY(2px);
+}
 
-function getFaviconUrl(domain) {
-    if (customIconMap[domain]) {
-        return customIconMap[domain];
+header p {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+}
+
+#search-bar {
+    width: 100%;
+    height: 52px;
+    padding: 14px 20px;
+    background-color: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-main);
+    font-size: 1rem;
+    outline: none;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+#search-bar:focus {
+    border-color: var(--accent-butter);
+    box-shadow: 0 0 10px rgba(255, 239, 179, 0.2);
+}
+
+#custom-bookmarks .tool-box {
+    border: none;
+    padding: 0;
+    margin-bottom: 20px;
+}
+
+#custom-bookmarks #bookmark-form {
+    display: flex;
+    gap: 10px;
+}
+
+#custom-bookmarks #bookmark-form input {
+    margin-bottom: 0;
+}
+
+.main-layout {
+    display: grid;
+    grid-template-columns: 220px 1fr 300px;
+    gap: 30px;
+    align-items: start;
+}
+
+.resources-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background-color: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    padding: 24px;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent-butter);
+}
+
+.card h3 {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    color: var(--accent-butter);
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 8px;
+}
+
+.link-list {
+    list-style: none;
+}
+
+.link-list li {
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.link-list a {
+    color: var(--text-main);
+    text-decoration: none;
+    font-weight: 500;
+    border-bottom: 1px dashed transparent;
+    transition: all 0.2s;
+}
+
+.link-list a:hover {
+    color: var(--accent-butter);
+    border-bottom-color: var(--accent-butter);
+}
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.nav-sidebar {
+    background-color: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    padding: 24px 15px;
+    position: sticky;
+    top: 20px;
+}
+
+.nav-sidebar h3 {
+    font-size: 1.1rem;
+    color: var(--accent-butter);
+    margin-bottom: 15px;
+    padding-left: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.tool-box {
+    background-color: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.tool-box h4 {
+    margin-bottom: 15px;
+    font-size: 1rem;
+    color: var(--accent-butter);
+}
+
+#bookmark-form input,
+#scratchpad {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--bg-dark);
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-main);
+    margin-bottom: 12px;
+    font-family: inherit;
+}
+
+#bookmark-form input:focus,
+#scratchpad:focus {
+    border-color: var(--accent-butter);
+    outline: none;
+}
+
+#scratchpad {
+    height: 180px;
+    resize: none;
+    font-family: inherit;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.btn {
+    width: 100%;
+    background-color: var(--accent-butter);
+    color: var(--bg-dark);
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn:hover {
+    background-color: #ffffff;
+}
+
+.delete-link-btn {
+    background: none;
+    border: none;
+    color: var(--delete-red);
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: bold;
+    padding: 0 5px;
+}
+
+.delete-link-btn:hover {
+    color: #ff4d4d;
+}
+
+.link-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.favicon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 4px;
+}
+
+.menu-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.menu-list li {
+    padding: 12px 15px;
+    cursor: pointer;
+    border-radius: 8px;
+    color: var(--text-muted);
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.menu-list li:hover {
+    background-color: rgba(4, 75, 66, 0.4);
+    color: var(--text-main);
+}
+
+.menu-list li.active {
+    background-color: var(--border-color);
+    color: var(--accent-butter);
+    font-weight: 600;
+}
+
+/* --- Authentication Layout Styles --- */
+.auth-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
+}
+
+#user-profile {
+    background-color: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    position: relative;
+    width: 100%;
+    height: 52px;
+    box-sizing: border-box;
+    cursor: pointer;
+    user-select: none;
+    transition: border-color 0.2s ease;
+}
+
+#user-profile:hover {
+    border-color: var(--text-muted);
+}
+
+.profile-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+    padding: 0 16px;
+    gap: 12px;
+}
+
+.user-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid var(--accent-butter);
+}
+
+#user-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--accent-butter);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-grow: 1;
+}
+
+.dropdown-arrow {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    transition: transform 0.2s ease;
+}
+
+#user-profile.active .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 58px;
+    right: 0;
+    background-color: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    width: 100%;
+    min-width: 180px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    z-index: 100;
+    overflow: hidden;
+}
+
+.dropdown-menu.show {
+    display: block;
+}
+
+.dropdown-item {
+    padding: 12px 16px;
+    font-size: 0.85rem;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.dropdown-item:hover {
+    background-color: rgba(4, 75, 66, 0.4);
+}
+
+.dropdown-divider {
+    border: 0;
+    border-top: 1px solid var(--border-color);
+    margin: 0;
+}
+
+.logout-action {
+    color: var(--delete-red);
+    font-weight: 600;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #4cd137;
+    border-radius: 50%;
+}
+
+.logout-btn {
+    background-color: rgba(255, 135, 135, 0.1);
+    color: var(--delete-red);
+    border: 1px solid var(--delete-red);
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+    background-color: var(--delete-red);
+    color: var(--bg-dark);
+}
+
+@media (max-width: 1000px) {
+
+    .main-layout,
+    header {
+        grid-template-columns: 200px 1fr;
     }
-    return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
-}
 
-function displayCustomLinks() {
-    customLinksList.innerHTML = '';
-
-    if (savedLinks.length === 0) {
-        customLinksList.innerHTML = `<li style="color: var(--text-muted); font-size: 0.9rem;">No custom links added yet.</li>`;
-        return;
-    }
-
-    savedLinks.forEach((link, index) => {
-        const li = document.createElement('li');
-
-        let domain = '';
-        try {
-            domain = new URL(link.url).hostname;
-        } catch (e) {
-            domain = '';
-        }
-
-        const faviconUrl = getFaviconUrl(domain);
-
-        li.innerHTML = `
-            <div class="link-wrapper">
-                <img src="${faviconUrl}" class="favicon" alt="" onerror="this.style.display='none'">
-                <a href="${link.url}" target="_blank">${link.name}</a>
-            </div>
-            <button class="delete-link-btn" onclick="deleteLink(${index})" aria-label="Delete Bookmark">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-            </button>
-        `;
-        customLinksList.appendChild(li);
-    });
-}
-
-bookmarkForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    const newLink = {
-        name: linkName.value,
-        url: linkUrl.value
-    };
-
-    savedLinks.push(newLink);
-    localStorage.setItem('study_companion_links', JSON.stringify(savedLinks));
-    displayCustomLinks();
-
-    saveUserDataToCloud();
-
-    linkName.value = '';
-    linkUrl.value = '';
-});
-
-window.deleteLink = function (index) {
-    savedLinks.splice(index, 1);
-    localStorage.setItem('study_companion_links', JSON.stringify(savedLinks));
-    displayCustomLinks();
-    saveUserDataToCloud();
-}
-
-scratchpad.value = localStorage.getItem('study_companion_scratchpad') || '';
-
-let typingTimer;
-scratchpad.addEventListener('input', (e) => {
-    localStorage.setItem('study_companion_scratchpad', e.target.value);
-
-    clearTimeout(typingTimer);
-    typingTimer = setTimeout(() => {
-        saveUserDataToCloud();
-    }, 1000);
-});
-
-displayCustomLinks();
-
-function displayStaticLinksIcons() {
-    const staticLinks = document.querySelectorAll('.card:not([data-category="custom personal favorites"]) .link-list a');
-
-    staticLinks.forEach(link => {
-        let domain = '';
-        try {
-            domain = new URL(link.href).hostname;
-        } catch (e) {
-            return;
-        }
-
-        const faviconUrl = getFaviconUrl(domain);
-
-        const wrapper = document.createElement('div');
-        wrapper.className = 'link-wrapper';
-
-        const img = document.createElement('img');
-        img.src = faviconUrl;
-        img.className = 'favicon';
-        img.alt = '';
-        img.setAttribute('onerror', "this.style.display='none'");
-
-        link.parentNode.insertBefore(wrapper, link);
-        wrapper.appendChild(img);
-        wrapper.appendChild(link);
-    });
-}
-
-displayStaticLinksIcons();
-
-const menuItems = document.querySelectorAll('.menu-list li');
-
-function applyCategoryFilter(targetId) {
-    resourceCards.forEach(card => {
-        if (targetId === 'all' || card.getAttribute('id') === targetId) {
-            card.style.display = "block";
-        } else {
-            card.style.display = "none";
-        }
-    });
-}
-
-menuItems.forEach(item => {
-    item.addEventListener('click', () => {
-        menuItems.forEach(i => i.classList.remove('active'));
-
-        item.classList.add('active');
-
-        const target = item.getAttribute('data-target');
-        applyCategoryFilter(target);
-
-        if (searchBar.value !== '') {
-            searchBar.value = '';
-        }
-    });
-});
-
-searchBar.addEventListener('keyup', (e) => {
-    const term = e.target.value.toLowerCase();
-
-    if (term === '') {
-        const activeTarget = document.querySelector('.menu-list li.active').getAttribute('data-target');
-        applyCategoryFilter(activeTarget);
-        return;
-    }
-
-    resourceCards.forEach(card => {
-        const categoryData = card.getAttribute('data-category');
-        const keywords = categoryData ? categoryData.toLowerCase() : "";
-        const contentText = card.textContent.toLowerCase();
-
-        if (keywords.includes(term) || contentText.includes(term)) {
-            card.style.display = "block";
-        } else {
-            card.style.display = "none";
-        }
-    });
-});
-
-async function saveUserDataToCloud() {
-    if (!window.auth.currentUser) return;
-
-    try {
-        const userId = window.auth.currentUser.uid;
-        await setDoc(doc(window.db, "users", userId), {
-            links: savedLinks,
-            scratchpadText: scratchpad.value,
-            updatedAt: new Date()
-        });
-        console.log("Cloud synchronized successfully!");
-    } catch (e) {
-        console.error("Error syncing with cloud: ", e);
+    .sidebar {
+        grid-column: 1 / -1;
+        flex-direction: row;
     }
 }
 
-onAuthStateChanged(window.auth, async (user) => {
-    const loginBtn = document.getElementById('login-btn');
-    const userProfile = document.getElementById('user-profile');
-    const userNameSpan = document.getElementById('user-name');
-    const userAvatar = document.getElementById('user-avatar');
+@media (max-width: 768px) {
 
-    if (user) {
-        loginBtn.style.display = 'none';
-        userProfile.style.display = 'flex';
-
-        const firstName = user.displayName ? user.displayName.split(' ')[0] : 'User';
-        userNameSpan.textContent = `Hi, ${firstName}`;
-
-        if (user.photoURL) {
-            userAvatar.src = user.photoURL;
-            userAvatar.style.display = 'block';
-        } else {
-            userAvatar.style.display = 'none';
-        }
-
-        const docRef = doc(window.db, "users", user.uid);
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-            const data = docSnap.data();
-            savedLinks = data.links || [];
-            scratchpad.value = data.scratchpadText || '';
-        } else {
-            savedLinks = JSON.parse(localStorage.getItem('study_companion_links')) || [];
-            scratchpad.value = localStorage.getItem('study_companion_scratchpad') || '';
-            await saveUserDataToCloud();
-        }
-        displayCustomLinks();
-    } else {
-        loginBtn.style.display = 'block';
-        userProfile.style.display = 'none';
-        userNameSpan.textContent = '';
-
-        savedLinks = JSON.parse(localStorage.getItem('study_companion_links')) || [];
-        scratchpad.value = localStorage.getItem('study_companion_scratchpad') || '';
-        displayCustomLinks();
+    .main-layout,
+    header {
+        grid-template-columns: 1fr;
     }
-});
 
-const profileTrigger = document.getElementById('profile-trigger');
-const dropdownMenu = document.getElementById('dropdown-menu');
-const userProfileContainer = document.getElementById('user-profile');
+    header {
+        text-align: center;
+    }
 
-profileTrigger.addEventListener('click', (e) => {
-    e.stopPropagation();
-    dropdownMenu.classList.toggle('show');
-    userProfileContainer.classList.toggle('active');
-});
+    header h1 {
+        text-align: center;
+        margin-bottom: 15px;
+    }
 
-document.addEventListener('click', () => {
-    dropdownMenu.classList.remove('show');
-    userProfileContainer.classList.remove('active');
-});
-
-logoutBtn.onclick = () => {
-    signOut(window.auth).catch((error) => console.error("Logout Error:", error));
-};
-
-document.getElementById('login-btn').onclick = () => {
-    signInWithPopup(window.auth, provider);
-};
+    .nav-sidebar {
+        position: relative;
+        top: 0;
+    }
+}
