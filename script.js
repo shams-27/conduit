@@ -1,5 +1,5 @@
 import { GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { doc, getDoc, setDoc, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const searchBar = document.getElementById('search-bar');
 const resourceCards = document.querySelectorAll('.card');
@@ -14,6 +14,10 @@ const userProfile = document.getElementById('user-profile');
 const userNameSpan = document.getElementById('user-name');
 const logoutBtn = document.getElementById('logout-btn');
 
+// New Notebook Elements
+const notebookTabs = document.getElementById('notebook-tabs');
+const addNoteBtn = document.getElementById('add-note-btn');
+
 const customIconMap = {
     "docs.google.com": "https://img.icons8.com/color/96/google-docs--v1.png",
     "sheets.google.com": "https://img.icons8.com/color/96/google-sheets.png",
@@ -24,21 +28,89 @@ const customIconMap = {
     "web.whatsapp.com": "https://img.icons8.com/color/96/whatsapp.png",
 };
 
-searchBar.addEventListener('keyup', (e) => {
-    const term = e.target.value.toLowerCase();
+// --- MULTI-NOTEBOOK CORE STATE & LOGIC ---
+let notes = JSON.parse(localStorage.getItem('study_companion_notes')) || [
+    { id: Date.now().toString(), title: 'Main Note', content: localStorage.getItem('study_companion_scratchpad') || '' }
+];
+let activeNoteId = notes[0]?.id;
 
-    resourceCards.forEach(card => {
-        const keywords = card.getAttribute('data-category').toLowerCase();
-        const contentText = card.textContent.toLowerCase();
+function renderTabs() {
+    if (!notebookTabs) return;
+    notebookTabs.innerHTML = '';
 
-        if (keywords.includes(term) || contentText.includes(term)) {
-            card.style.display = "block";
-        } else {
-            card.style.display = "none";
+    notes.forEach(note => {
+        const tab = document.createElement('button');
+        tab.className = `note-tab ${note.id === activeNoteId ? 'active' : ''}`;
+        tab.innerHTML = `
+            ${note.title}
+            ${notes.length > 1 ? `<span class="delete-note-btn" data-id="${note.id}">&times;</span>` : ''}
+        `;
+
+        // Switch tab content
+        tab.addEventListener('click', (e) => {
+            if (e.target.classList.contains('delete-note-btn')) return;
+            activeNoteId = note.id;
+            scratchpad.value = note.content;
+            renderTabs();
+        });
+
+        // Delete tab action
+        const deleteBtn = tab.querySelector('.delete-note-btn');
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (confirm(`Delete "${note.title}"?`)) {
+                    notes = notes.filter(n => n.id !== note.id);
+                    if (activeNoteId === note.id) activeNoteId = notes[0].id;
+                    saveNotes();
+                    renderTabs();
+                    scratchpad.value = notes.find(n => n.id === activeNoteId).content;
+                }
+            });
+        }
+        notebookTabs.appendChild(tab);
+    });
+}
+
+function saveNotes() {
+    localStorage.setItem('study_companion_notes', JSON.stringify(notes));
+    saveUserDataToCloud();
+}
+
+if (addNoteBtn) {
+    addNoteBtn.addEventListener('click', () => {
+        const title = prompt("Enter note title:", "New Note");
+        if (title && title.trim() !== '') {
+            const newNote = { id: Date.now().toString(), title: title.trim(), content: '' };
+            notes.push(newNote);
+            activeNoteId = newNote.id;
+            scratchpad.value = '';
+            renderTabs();
+            saveNotes();
         }
     });
+}
+
+let typingTimer;
+scratchpad.addEventListener('input', (e) => {
+    const activeNote = notes.find(n => n.id === activeNoteId);
+    if (activeNote) {
+        activeNote.content = e.target.value;
+        localStorage.setItem('study_companion_notes', JSON.stringify(notes));
+
+        clearTimeout(typingTimer);
+        typingTimer = setTimeout(() => {
+            saveUserDataToCloud();
+        }, 1000);
+    }
 });
 
+// Setup Initial Text Area View
+scratchpad.value = notes.find(n => n.id === activeNoteId)?.content || '';
+renderTabs();
+
+
+// --- BOOKMARKS LOGIC ---
 let savedLinks = JSON.parse(localStorage.getItem('study_companion_links')) || [];
 
 function getFaviconUrl(domain) {
@@ -106,20 +178,10 @@ window.deleteLink = function (index) {
     saveUserDataToCloud();
 }
 
-scratchpad.value = localStorage.getItem('study_companion_scratchpad') || '';
-
-let typingTimer;
-scratchpad.addEventListener('input', (e) => {
-    localStorage.setItem('study_companion_scratchpad', e.target.value);
-
-    clearTimeout(typingTimer);
-    typingTimer = setTimeout(() => {
-        saveUserDataToCloud();
-    }, 1000);
-});
-
 displayCustomLinks();
 
+
+// --- FILTER & STATIC SEARCH LOGIC ---
 function displayStaticLinksIcons() {
     const staticLinks = document.querySelectorAll('.card:not([data-category="custom personal favorites"]) .link-list a');
 
@@ -199,6 +261,8 @@ searchBar.addEventListener('keyup', (e) => {
     });
 });
 
+
+// --- CLOUD SYNC LOGIC ---
 async function saveUserDataToCloud() {
     if (!window.auth.currentUser) return;
 
@@ -206,7 +270,7 @@ async function saveUserDataToCloud() {
         const userId = window.auth.currentUser.uid;
         await setDoc(doc(window.db, "users", userId), {
             links: savedLinks,
-            scratchpadText: scratchpad.value,
+            notes: notes, // Syncing notebook array instead of basic text field
             updatedAt: new Date()
         });
         console.log("Cloud synchronized successfully!");
@@ -241,27 +305,49 @@ onAuthStateChanged(window.auth, async (user) => {
         if (docSnap.exists()) {
             const data = docSnap.data();
             savedLinks = data.links || [];
-            scratchpad.value = data.scratchpadText || '';
 
-            localStorage.setItem('study_companion_links', JSON.stringify(savedLinks));
-            localStorage.setItem('study_companion_scratchpad', scratchpad.value);
-        }  else {
+            // Safe Sync Fallback: Convert legacy cloud string to structured object arrays
+            if (data.notes && data.notes.length > 0) {
+                notes = data.notes;
+            } else {
+                notes = [{ id: Date.now().toString(), title: 'Main Note', content: data.scratchpadText || '' }];
+            }
+        } else {
             savedLinks = JSON.parse(localStorage.getItem('study_companion_links')) || [];
-            scratchpad.value = localStorage.getItem('study_companion_scratchpad') || '';
+            notes = JSON.parse(localStorage.getItem('study_companion_notes')) || [
+                { id: Date.now().toString(), title: 'Main Note', content: localStorage.getItem('study_companion_scratchpad') || '' }
+            ];
             await saveUserDataToCloud();
         }
+
+        activeNoteId = notes[0]?.id;
+        scratchpad.value = notes.find(n => n.id === activeNoteId)?.content || '';
+
+        localStorage.setItem('study_companion_links', JSON.stringify(savedLinks));
+        localStorage.setItem('study_companion_notes', JSON.stringify(notes));
+
         displayCustomLinks();
+        renderTabs();
     } else {
         loginBtn.style.display = 'block';
         userProfile.style.display = 'none';
         userNameSpan.textContent = '';
 
         savedLinks = JSON.parse(localStorage.getItem('study_companion_links')) || [];
-        scratchpad.value = localStorage.getItem('study_companion_scratchpad') || '';
+        notes = JSON.parse(localStorage.getItem('study_companion_notes')) || [
+            { id: Date.now().toString(), title: 'Main Note', content: localStorage.getItem('study_companion_scratchpad') || '' }
+        ];
+
+        activeNoteId = notes[0]?.id;
+        scratchpad.value = notes.find(n => n.id === activeNoteId)?.content || '';
+
         displayCustomLinks();
+        renderTabs();
     }
 });
 
+
+// --- AUTH INTERFACE UI BINDINGS ---
 const profileTrigger = document.getElementById('profile-trigger');
 const dropdownMenu = document.getElementById('dropdown-menu');
 const userProfileContainer = document.getElementById('user-profile');
@@ -285,6 +371,8 @@ document.getElementById('login-btn').onclick = () => {
     signInWithPopup(window.auth, provider);
 };
 
+
+// --- BOOKMARK TRIGGER MODAL UI ---
 const modal = document.getElementById('add-link-modal');
 const openModalBtn = document.getElementById('open-modal-btn');
 const closeModalBtn = document.getElementById('close-modal-btn');
