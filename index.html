@@ -143,20 +143,18 @@
 
             <aside class="sidebar">
                 <div class="tool-box" id="scratchpad-section">
-                    <div
-                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 12px;">
                         <h4 style="margin: 0; white-space: nowrap;">Notebook</h4>
                         <button id="add-note-btn" class="btn"
                             style="padding: 6px 14px; font-size: 0.85rem; width: max-content; white-space: nowrap; flex-shrink: 0;">+
                             New Note</button>
                     </div>
-            
-                    <div class="notebook-tabs" id="notebook-tabs">
-                    </div>
-            
+                
+                    <ul id="note-list" class="note-list-menu"></ul>
+                
                     <textarea id="scratchpad"
-                        placeholder="Drop temporary code snippets, assignment dates, or commands here..."></textarea>
-                </div>    
+                        placeholder="Drop temporary code snippets, assignment dates, or commands here..."></textarea>      
+                </div>
             </aside>
         </div>
     </div>

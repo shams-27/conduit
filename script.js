@@ -14,8 +14,8 @@ const userProfile = document.getElementById('user-profile');
 const userNameSpan = document.getElementById('user-name');
 const logoutBtn = document.getElementById('logout-btn');
 
-// New Notebook Elements
-const notebookTabs = document.getElementById('notebook-tabs');
+// Notebook Elements
+const noteListMenu = document.getElementById('note-list');
 const addNoteBtn = document.getElementById('add-note-btn');
 
 const customIconMap = {
@@ -28,52 +28,70 @@ const customIconMap = {
     "web.whatsapp.com": "https://img.icons8.com/color/96/whatsapp.png",
 };
 
-// --- MULTI-NOTEBOOK CORE STATE & LOGIC ---
-let notes = JSON.parse(localStorage.getItem('study_companion_notes')) || [
-    { id: Date.now().toString(), title: 'Main Note', content: localStorage.getItem('study_companion_scratchpad') || '' }
-];
-let activeNoteId = notes[0]?.id;
+// --- NOTEBOOK CORE STATE & LOGIC (LOCAL STORAGE STRIPPED) ---
+let notes = [];
+let activeNoteId = null;
 
-function renderTabs() {
-    if (!notebookTabs) return;
-    notebookTabs.innerHTML = '';
+function renderNoteList() {
+    if (!noteListMenu) return;
+    noteListMenu.innerHTML = '';
+
+    // If there are no notes, cleanly disable the scratchpad interface
+    if (notes.length === 0) {
+        scratchpad.value = '';
+        scratchpad.placeholder = 'Click "+ New Note" above to create your first note!';
+        scratchpad.disabled = true;
+        return;
+    }
+
+    // Enable text area if notes are present
+    scratchpad.disabled = false;
+    scratchpad.placeholder = 'Drop temporary code snippets, assignment dates, or commands here...';
+
+    // Verify activeNoteId fallback integrity
+    const activeNoteExists = notes.some(n => n.id === activeNoteId);
+    if (!activeNoteExists && notes.length > 0) {
+        activeNoteId = notes[0].id;
+    }
 
     notes.forEach(note => {
-        const tab = document.createElement('button');
-        tab.className = `note-tab ${note.id === activeNoteId ? 'active' : ''}`;
-        tab.innerHTML = `
-            ${note.title}
-            ${notes.length > 1 ? `<span class="delete-note-btn" data-id="${note.id}">&times;</span>` : ''}
+        const li = document.createElement('li');
+        li.className = `note-list-item ${note.id === activeNoteId ? 'active' : ''}`;
+        li.innerHTML = `
+            <span class="note-title">${note.title}</span>
+            <button class="delete-note-btn" data-id="${note.id}">&times;</button>
         `;
 
-        // Switch tab content
-        tab.addEventListener('click', (e) => {
+        // Switch active notebook pane on selection
+        li.addEventListener('click', (e) => {
             if (e.target.classList.contains('delete-note-btn')) return;
             activeNoteId = note.id;
             scratchpad.value = note.content;
-            renderTabs();
+            renderNoteList();
         });
 
-        // Delete tab action
-        const deleteBtn = tab.querySelector('.delete-note-btn');
+        // Handle note deletion
+        const deleteBtn = li.querySelector('.delete-note-btn');
         if (deleteBtn) {
             deleteBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 if (confirm(`Delete "${note.title}"?`)) {
                     notes = notes.filter(n => n.id !== note.id);
-                    if (activeNoteId === note.id) activeNoteId = notes[0].id;
+                    if (activeNoteId === note.id) {
+                        activeNoteId = notes[0]?.id || null;
+                    }
                     saveNotes();
-                    renderTabs();
-                    scratchpad.value = notes.find(n => n.id === activeNoteId).content;
+                    renderNoteList();
+                    const activeNote = notes.find(n => n.id === activeNoteId);
+                    scratchpad.value = activeNote ? activeNote.content : '';
                 }
             });
         }
-        notebookTabs.appendChild(tab);
+        noteListMenu.appendChild(li);
     });
 }
 
 function saveNotes() {
-    localStorage.setItem('study_companion_notes', JSON.stringify(notes));
     saveUserDataToCloud();
 }
 
@@ -85,8 +103,11 @@ if (addNoteBtn) {
             notes.push(newNote);
             activeNoteId = newNote.id;
             scratchpad.value = '';
-            renderTabs();
+            renderNoteList();
             saveNotes();
+
+            // Focus scrolling to bottom when list grows
+            noteListMenu.scrollTop = noteListMenu.scrollHeight;
         }
     });
 }
@@ -96,7 +117,6 @@ scratchpad.addEventListener('input', (e) => {
     const activeNote = notes.find(n => n.id === activeNoteId);
     if (activeNote) {
         activeNote.content = e.target.value;
-        localStorage.setItem('study_companion_notes', JSON.stringify(notes));
 
         clearTimeout(typingTimer);
         typingTimer = setTimeout(() => {
@@ -105,13 +125,14 @@ scratchpad.addEventListener('input', (e) => {
     }
 });
 
-// Setup Initial Text Area View
-scratchpad.value = notes.find(n => n.id === activeNoteId)?.content || '';
-renderTabs();
+// Setup Initial State View
+const initialActiveNote = notes.find(n => n.id === activeNoteId);
+scratchpad.value = initialActiveNote ? initialActiveNote.content : '';
+renderNoteList();
 
 
-// --- BOOKMARKS LOGIC ---
-let savedLinks = JSON.parse(localStorage.getItem('study_companion_links')) || [];
+// --- BOOKMARKS LOGIC (LOCAL STORAGE STRIPPED) ---
+let savedLinks = [];
 
 function getFaviconUrl(domain) {
     if (customIconMap[domain]) {
@@ -162,9 +183,7 @@ bookmarkForm.addEventListener('submit', (e) => {
     };
 
     savedLinks.push(newLink);
-    localStorage.setItem('study_companion_links', JSON.stringify(savedLinks));
     displayCustomLinks();
-
     saveUserDataToCloud();
 
     linkName.value = '';
@@ -173,7 +192,6 @@ bookmarkForm.addEventListener('submit', (e) => {
 
 window.deleteLink = function (index) {
     savedLinks.splice(index, 1);
-    localStorage.setItem('study_companion_links', JSON.stringify(savedLinks));
     displayCustomLinks();
     saveUserDataToCloud();
 }
@@ -270,7 +288,7 @@ async function saveUserDataToCloud() {
         const userId = window.auth.currentUser.uid;
         await setDoc(doc(window.db, "users", userId), {
             links: savedLinks,
-            notes: notes, // Syncing notebook array instead of basic text field
+            notes: notes,
             updatedAt: new Date()
         });
         console.log("Cloud synchronized successfully!");
@@ -306,43 +324,36 @@ onAuthStateChanged(window.auth, async (user) => {
             const data = docSnap.data();
             savedLinks = data.links || [];
 
-            // Safe Sync Fallback: Convert legacy cloud string to structured object arrays
-            if (data.notes && data.notes.length > 0) {
+            if (data.notes) {
                 notes = data.notes;
             } else {
-                notes = [{ id: Date.now().toString(), title: 'Main Note', content: data.scratchpadText || '' }];
+                notes = [];
             }
         } else {
-            savedLinks = JSON.parse(localStorage.getItem('study_companion_links')) || [];
-            notes = JSON.parse(localStorage.getItem('study_companion_notes')) || [
-                { id: Date.now().toString(), title: 'Main Note', content: localStorage.getItem('study_companion_scratchpad') || '' }
-            ];
+            savedLinks = [];
+            notes = [];
             await saveUserDataToCloud();
         }
 
-        activeNoteId = notes[0]?.id;
-        scratchpad.value = notes.find(n => n.id === activeNoteId)?.content || '';
-
-        localStorage.setItem('study_companion_links', JSON.stringify(savedLinks));
-        localStorage.setItem('study_companion_notes', JSON.stringify(notes));
+        activeNoteId = notes[0]?.id || null;
+        const cloudActiveNote = notes.find(n => n.id === activeNoteId);
+        scratchpad.value = cloudActiveNote ? cloudActiveNote.content : '';
 
         displayCustomLinks();
-        renderTabs();
+        renderNoteList();
     } else {
         loginBtn.style.display = 'block';
         userProfile.style.display = 'none';
         userNameSpan.textContent = '';
 
-        savedLinks = JSON.parse(localStorage.getItem('study_companion_links')) || [];
-        notes = JSON.parse(localStorage.getItem('study_companion_notes')) || [
-            { id: Date.now().toString(), title: 'Main Note', content: localStorage.getItem('study_companion_scratchpad') || '' }
-        ];
-
-        activeNoteId = notes[0]?.id;
-        scratchpad.value = notes.find(n => n.id === activeNoteId)?.content || '';
+        // Reset to empty arrays upon logging out
+        savedLinks = [];
+        notes = [];
+        activeNoteId = null;
+        scratchpad.value = '';
 
         displayCustomLinks();
-        renderTabs();
+        renderNoteList();
     }
 });
 

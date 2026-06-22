@@ -499,55 +499,58 @@ header p {
     white-space: nowrap;
 }
 
-/* --- Mini-Notebook Layout Container --- */
-.notebook-tabs {
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
-    justify-content: flex-start !important;
-    align-items: center !important;
-    gap: 8px !important;
-    margin-bottom: 12px !important;
-    overflow-x: auto !important;
-    padding-bottom: 6px !important;
-    width: 100%;
+/* --- Vertical Note List Menu --- */
+.note-list-menu {
+    list-style: none;
+    margin: 0 0 15px 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    max-height: 160px;
+    overflow-y: auto;
+    padding-right: 4px;
 }
 
-.notebook-tabs::-webkit-scrollbar {
-    height: 4px;
+.note-list-menu::-webkit-scrollbar {
+    width: 4px;
 }
 
-.notebook-tabs::-webkit-scrollbar-thumb {
+.note-list-menu::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.15);
     border-radius: 4px;
 }
 
-.note-tab {
-    background-color: rgba(4, 75, 66, 0.15) !important;
-    border: 1px solid var(--border-color) !important;
-    color: rgba(251, 235, 194, 0.65) !important;
-    padding: 6px 12px !important;
-    border-radius: 6px !important;
-    cursor: pointer !important;
-    font-size: 0.85rem !important;
-    white-space: nowrap !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 8px !important;
-    flex-shrink: 0 !important;
-    transition: all 0.2s ease-in-out;
+.note-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    background-color: transparent;
+    border: none;
+    transition: all 0.2s ease;
 }
 
-.note-tab:hover {
-    background-color: rgba(4, 75, 66, 0.4) !important;
-    color: #fbebc2 !important;
+.note-list-item:hover {
+    background-color: rgba(4, 75, 66, 0.4);
+    color: var(--text-main);
 }
 
-.note-tab.active {
-    background-color: var(--border-color) !important;
-    color: #ffffff !important;
-    border-color: #fbebc2 !important;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2) !important;
+.note-list-item.active {
+    background-color: var(--border-color);
+    color: var(--accent-butter);
+    font-weight: 600;
+}
+
+.note-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 85%;
 }
 
 .delete-note-btn {
@@ -555,7 +558,7 @@ header p {
     border: none !important;
     color: rgba(251, 235, 194, 0.4) !important;
     cursor: pointer !important;
-    font-size: 1.1rem !important;
+    font-size: 1.2rem !important;
     line-height: 1 !important;
     padding: 0 2px !important;
     transition: color 0.2s ease;
@@ -563,6 +566,13 @@ header p {
 
 .delete-note-btn:hover {
     color: var(--delete-red) !important;
+}
+
+#scratchpad:disabled {
+    background-color: rgba(0, 0, 0, 0.25);
+    color: rgba(255, 255, 255, 0.3);
+    cursor: not-allowed;
+    border-style: dashed;
 }
 
 @media (max-width: 1000px) {
