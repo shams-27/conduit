@@ -96,7 +96,6 @@ function displayCustomLinks() {
     customLinksList.innerHTML = '';
 
     if (savedLinks.length === 0) {
-        customLinksList.innerHTML = `<li style="color: var(--text-muted); font-size: 0.8rem; padding: 0 5px; white-space: nowrap;">Empty</li>`;
         return;
     }
 
