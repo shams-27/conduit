@@ -1,8 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;800');
 
 @font-face {
-    font-family: 'Blue Spirits';
-    src: url('fonts/Blue Spirits.otf') format('opentype');
+    font-family: 'falsepos';
+    src: url('fonts/falsepos.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
@@ -75,9 +75,9 @@ body {
 }
 
 .header-container h1 {
-    font-family: 'Blue Spirits', sans-serif;
+    font-family: 'falsepos', sans-serif;
     font-weight: 100;
-    font-style: italic;
+    font-style: normal;
     font-size: 2.5rem;
     color: var(--accent-butter);
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
