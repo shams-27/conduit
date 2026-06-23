@@ -61,23 +61,23 @@ body {
 
 .header-container {
     width: 100%;
-    padding: 12px 30px;
-    display: grid;
-    grid-template-columns: auto 1fr auto auto;
+    padding: 10px 24px;
+    display: flex;
     align-items: center;
-    gap: 24px;
+    gap: 0;
 }
 
 .header-container h1 {
     font-family: 'Lobster Two', sans-serif;
     font-weight: 700;
     font-style: italic;
-    font-size: 2.6rem;
+    font-size: 2.5rem;
     color: var(--accent-butter);
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     white-space: nowrap;
-    justify-self: start;
     margin: 0;
+    padding-right: 20px;
+    flex-shrink: 0;
 }
 
 /* DIU Hub Dropdown Container Shell */
@@ -86,6 +86,8 @@ body {
     height: 42px;
     cursor: pointer;
     user-select: none;
+    flex-shrink: 0;
+    margin-left: 12px;
 }
 
 .hub-trigger {
@@ -223,19 +225,15 @@ body {
    3. HEADER INTERFACES (BOOKMARK TRAY & PROFILE SECTIONS)
    ========================================================================== */
 .header-bookmark-tray {
-    justify-self: center;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 12px;
-    background-color: var(--card-bg);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
-    border-radius: 12px;
-    padding: 0 14px;
+    flex-shrink: 0;
+    padding: 0 16px;
     height: 48px;
+    overflow: visible;
+    margin-left: auto;
 }
 
 .tray-links {
@@ -330,10 +328,12 @@ body {
 }
 
 .header-actions {
-    justify-self: end;
     display: flex;
     align-items: center;
     flex-shrink: 0;
+    padding-left: 16px;
+    border-left: 1px solid var(--glass-border);
+    margin-left: 16px;
 }
 
 .auth-container {
@@ -610,22 +610,54 @@ body {
    ========================================================================== */
 @media (max-width: 768px) {
     .header-container {
-        display: flex;
         flex-direction: column;
-        gap: 16px;
-        padding: 15px;
-        align-items: center;
+        gap: 12px;
+        padding: 14px 16px;
+        align-items: stretch;
     }
 
-    .header-container h1,
-    .header-bookmark-tray,
-    .header-actions,
-    .hub-dropdown-container {
-        justify-self: unset;
+    .header-container h1 {
+        border-right: none;
+        border-bottom: 1px solid var(--glass-border);
+        padding-right: 0;
+        padding-bottom: 12px;
+        text-align: center;
     }
 
     .header-bookmark-tray {
-        width: 100%;
-        max-width: 100%;
+        padding: 0 8px;
+        border: 1px solid var(--glass-border);
+        border-radius: 10px;
+        background-color: var(--card-bg);
+        justify-content: center;
+        flex-wrap: wrap;
+        height: auto;
+        min-height: 48px;
+        padding-top: 6px;
+        padding-bottom: 6px;
+    }
+
+    .hub-dropdown-container {
+        border-left: none;
+        margin-left: 0;
+        padding-left: 0;
+        border-top: 1px solid var(--glass-border);
+        padding-top: 12px;
+        margin-top: 0;
+        height: auto;
+    }
+
+    .hub-trigger {
+        height: 42px;
+        justify-content: center;
+    }
+
+    .header-actions {
+        border-left: none;
+        margin-left: 0;
+        padding-left: 0;
+        border-top: 1px solid var(--glass-border);
+        padding-top: 12px;
+        justify-content: center;
     }
 }
