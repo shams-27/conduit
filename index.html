@@ -9,48 +9,50 @@
 </head>
 
 <body>
-    <div class="container">
-        <header>
+
+    <header class="full-width-header">
+        <div class="header-container">
+
             <h1>Conduit</h1>
-            <input type="text" id="search-bar" placeholder="Type to filter resources (e.g., AI, Docs)...">
 
-            <div class="auth-container">
-                <button id="login-btn" class="btn" style="padding: 14px 20px;">Login with Google</button>
+            <div class="header-bookmark-tray">
+                <ul id="custom-links-list" class="tray-links">
+                </ul>
+                <button id="open-modal-btn" class="tray-add-btn" title="Add Quick Bookmark">＋</button>
+            </div>
 
-                <div id="user-profile" style="display: none;">
-                    <div class="profile-trigger" id="profile-trigger">
-                        <img id="user-avatar" class="user-avatar" src="" alt="" onerror="this.style.display='none'">
-                        <span id="user-name"></span>
-                        <span class="dropdown-arrow">▼</span>
-                    </div>
+            <div class="header-actions">
+                <div class="auth-container">
 
-                    <div class="dropdown-menu" id="dropdown-menu">
-                        <div class="dropdown-item sync-status">
-                            <span class="status-dot"></span> Cloud Synced
+                    <button id="login-btn" class="btn login-header-btn">Login with Google</button>
+
+                    <div id="user-profile" style="display: none;">
+                        <div class="profile-trigger" id="profile-trigger">
+                            <img id="user-avatar" class="user-avatar" src="" alt="" onerror="this.style.display='none'">
+                            <span id="user-name"></span>
+                            <span class="dropdown-arrow">▼</span>
                         </div>
-                        <hr class="dropdown-divider">
-                        <button id="logout-btn" class="dropdown-item logout-action">Logout</button>
+
+                        <div class="dropdown-menu" id="dropdown-menu">
+                            <div class="dropdown-item sync-status">
+                                <span class="status-dot"></span> Cloud Synced
+                            </div>
+                            <hr class="dropdown-divider">
+                            <button id="logout-btn" class="dropdown-item logout-action">Logout</button>
+                        </div>
                     </div>
+
                 </div>
             </div>
-        </header>
 
+        </div>
+    </header>
+
+    <div class="container">
         <div class="main-layout">
-            <aside class="nav-sidebar">
-                <h3>Categories</h3>
-                <ul id="category-menu" class="menu-list">
-                    <li class="active" data-target="all">All Resources</li>
-                    <li data-target="ai-assistants">AI Assistants</li>
-                    <li data-target="learning-media">Learning & Media</li>
-                    <li data-target="google-tools">Google Tools</li>
-                    <li data-target="toolbox">Toolbox</li>
-                    <li data-target="communication">Communication</li>
-                    <li data-target="careee-interships">Career & Internships</li>
-                    <li data-target="custom-bookmarks">Custom Bookmarks</li>
-                </ul>
-            </aside>
 
             <main class="resources-grid">
+
                 <section class="card" id="ai-assistants">
                     <h3>AI Assistants</h3>
                     <ul class="link-list">
@@ -109,24 +111,13 @@
                     </ul>
                 </section>
 
-                <section class="card" id="custom-bookmarks" data-category="custom personal favorites">
-                    <div class="section-header"
-                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h3 style="margin: 0;">Custom Bookmarks</h3>
-                        <button id="open-modal-btn" class="btn">+ Add Link</button>
-                    </div>
-                
-                    <ul class="link-list" id="custom-links-list">
-                    </ul>
-                </section>
-                
                 <div id="add-link-modal" class="modal-overlay">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h3>Add New Bookmark</h3>
                             <button id="close-modal-btn" class="close-btn">&times;</button>
                         </div>
-                
+
                         <form id="bookmark-form">
                             <div class="input-group">
                                 <input type="text" id="link-name" placeholder="Link Name (e.g., Uni Portal)" required>
@@ -136,26 +127,30 @@
                             </div>
                             <button type="submit" class="btn" style="width: 100%; margin-top: 10px;">Save Link</button>
                         </form>
-                
-                    </div>          
+                    </div>
                 </div>
+
             </main>
 
             <aside class="sidebar">
                 <div class="tool-box" id="scratchpad-section">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 12px;">
+
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 12px;">
                         <h4 style="margin: 0; white-space: nowrap;">Notebook</h4>
                         <button id="add-note-btn" class="btn"
                             style="padding: 6px 14px; font-size: 0.85rem; width: max-content; white-space: nowrap; flex-shrink: 0;">+
                             New Note</button>
                     </div>
-                
+
                     <ul id="note-list" class="note-list-menu"></ul>
-                
+
                     <textarea id="scratchpad"
-                        placeholder="Drop temporary code snippets, assignment dates, or commands here..."></textarea>      
+                        placeholder="Drop temporary code snippets, assignment dates, or commands here..."></textarea>
+
                 </div>
             </aside>
+
         </div>
     </div>
 

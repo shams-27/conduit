@@ -1,5 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;800&family=Lobster+Two:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
+/* ==========================================================================
+   1. CORE VARIABLES & GLOBAL STYLES
+   ========================================================================== */
 :root {
     --bg-dark: #001a17;
     --card-bg: #012d28;
@@ -21,94 +24,315 @@ body {
     background-color: var(--bg-dark);
     color: var(--text-main);
     min-height: 100vh;
-    padding: 40px 20px;
+    padding: 0;
     background-image: radial-gradient(rgba(255, 239, 179, 0.07) 3px, transparent 1px);
     background-size: 24px 24px;
 }
 
+/* Base Wrapper Container */
 .container {
-    max-width: 1100px;
-    margin: 0 auto;
+    max-width: 1440px;
+    margin: 40px auto;
+    padding: 0 20px;
 }
 
-header {
-    display: grid;
-    grid-template-columns: 220px 1fr 300px;
-    gap: 30px;
+/* ==========================================================================
+   2. TOP NAVIGATION HEADER
+   ========================================================================== */
+.full-width-header {
+    width: 100%;
+    background-color: var(--card-bg);
+    border-bottom: 2px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.header-container {
+    width: 100%;
+    max-width: 100%;
+    padding: 12px 30px;
+    display: flex;
     align-items: center;
-    margin-bottom: 40px;
+    justify-content: space-between;
+    gap: 25px;
 }
 
-header h1 {
+/* Application Logo Branding */
+.header-container h1 {
     font-family: 'Lobster Two', sans-serif;
     font-weight: 700;
     font-style: italic;
-    font-size: 3.8rem;
+    font-size: 2.6rem;
     color: var(--accent-butter);
-    margin-bottom: 0;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    text-align: center;
-    transform: translateY(2px);
+    white-space: nowrap;
 }
 
-header p {
-    color: var(--text-muted);
-    font-size: 1.1rem;
-    margin-bottom: 20px;
+/* Center Header Quick Bookmark Tray (Refined to eliminate misalignments) */
+.header-bookmark-tray {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background-color: var(--bg-dark);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    padding: 0 14px;
+    margin: 0 auto;
+    height: 48px;
 }
 
-#search-bar {
+.tray-links {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    overflow: visible;
+}
+
+.tray-links li {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    height: 32px;
+    width: 32px;
+    transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.tray-links li:hover {
+    transform: scale(1.12);
+}
+
+.tray-links .link-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 100%;
-    height: 52px;
-    padding: 14px 20px;
+    height: 100%;
+}
+
+.tray-links .link-wrapper a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.tray-links .favicon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--border-color);
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 2px;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+    object-fit: cover;
+}
+
+.tray-links li:hover .favicon {
+    border-color: var(--accent-butter);
+}
+
+.tray-links .delete-link-btn {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: var(--bg-dark);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    font-size: 11px;
+    line-height: 14px;
+    color: var(--delete-red);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.tray-links li:hover .delete-link-btn {
+    display: flex;
+}
+
+.tray-add-btn {
+    background: transparent;
+    border: 2px solid var(--border-color);
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    padding: 0;
+    transition: all 0.15s ease-in-out;
+    margin-left: 4px;
+}
+
+.tray-add-btn:hover {
+    color: var(--bg-dark);
+    background-color: var(--accent-butter);
+    border-color: var(--accent-butter);
+    transform: scale(1.05);
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.auth-container {
+    display: flex;
+    align-items: center;
+}
+
+.login-header-btn {
+    padding: 10px 18px !important;
+    font-size: 0.85rem;
+    height: 42px;
+    white-space: nowrap;
+}
+
+#user-profile {
+    background-color: var(--bg-dark);
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    position: relative;
+    width: 180px;
+    height: 42px;
+    cursor: pointer;
+    user-select: none;
+    transition: border-color 0.2s ease;
+}
+
+#user-profile:hover {
+    border-color: var(--text-muted);
+}
+
+.profile-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+    padding: 0 12px;
+    gap: 8px;
+}
+
+.user-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1px solid var(--accent-butter);
+}
+
+#user-name {
+    font-size: 0.8rem;
+    color: var(--accent-butter);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-grow: 1;
+}
+
+.dropdown-arrow {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+}
+
+#user-profile.active .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+/* User Dropdown Overlay Menu */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 48px;
+    right: 0;
     background-color: var(--card-bg);
     border: 2px solid var(--border-color);
-    border-radius: 8px;
+    border-radius: 6px;
+    width: 100%;
+    min-width: 180px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    z-index: 1100;
+}
+
+.dropdown-menu.show {
+    display: block;
+}
+
+.dropdown-item {
+    padding: 10px 14px;
+    font-size: 0.8rem;
     color: var(--text-main);
-    font-size: 1rem;
-    outline: none;
-    box-sizing: border-box;
-    transition: all 0.2s ease;
-}
-
-#search-bar:focus {
-    border-color: var(--accent-butter);
-    box-shadow: 0 0 10px rgba(255, 239, 179, 0.2);
-}
-
-#custom-bookmarks .tool-box {
-    border: none;
-    padding: 0;
-    margin-bottom: 20px;
-}
-
-#custom-bookmarks #bookmark-form {
     display: flex;
-    gap: 10px;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    width: 100%;
+    cursor: pointer;
+    font-family: inherit;
 }
 
-#custom-bookmarks #bookmark-form input {
-    margin-bottom: 0;
+.dropdown-item:hover {
+    background-color: rgba(4, 75, 66, 0.4);
 }
 
+.dropdown-divider {
+    border: 0;
+    border-top: 1px solid var(--border-color);
+    margin: 0;
+}
+
+.logout-action {
+    color: var(--delete-red);
+    font-weight: 600;
+}
+
+.status-dot {
+    width: 6px;
+    height: 6px;
+    background-color: #4cd137;
+    border-radius: 50%;
+}
+
+/* ==========================================================================
+   3. APPLICATION WORKSPACE LAYOUT & RESOURCE GRIDS
+   ========================================================================== */
 .main-layout {
     display: grid;
-    grid-template-columns: 220px 1fr 300px;
+    grid-template-columns: 1fr 300px;
     gap: 30px;
     align-items: start;
 }
 
 .resources-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 16px;
 }
 
 .card {
     background-color: var(--card-bg);
     border: 2px solid var(--border-color);
     border-radius: 10px;
-    padding: 24px;
+    padding: 18px;
     transition: transform 0.2s, border-color 0.2s;
 }
 
@@ -118,7 +342,7 @@ header p {
 }
 
 .card h3 {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     margin-bottom: 15px;
     color: var(--accent-butter);
     border-bottom: 2px solid var(--border-color);
@@ -140,6 +364,7 @@ header p {
     color: var(--text-main);
     text-decoration: none;
     font-weight: 500;
+    font-size: 0.95rem;
     border-bottom: 1px dashed transparent;
     transition: all 0.2s;
 }
@@ -149,87 +374,18 @@ header p {
     border-bottom-color: var(--accent-butter);
 }
 
-.sidebar {
+.link-wrapper {
     display: flex;
-    flex-direction: column;
-    gap: 20px;
+    align-items: center;
+    gap: 10px;
 }
 
-.nav-sidebar {
-    background-color: var(--card-bg);
-    border: 2px solid var(--border-color);
-    border-radius: 10px;
-    padding: 24px 15px;
-    position: sticky;
-    top: 20px;
-}
-
-.nav-sidebar h3 {
-    font-size: 1.1rem;
-    color: var(--accent-butter);
-    margin-bottom: 15px;
-    padding-left: 10px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.tool-box {
-    background-color: var(--card-bg);
-    border: 2px solid var(--border-color);
-    border-radius: 10px;
-    padding: 20px;
-}
-
-.tool-box h4 {
-    margin-bottom: 15px;
-    font-size: 1rem;
-    color: var(--accent-butter);
-}
-
-#bookmark-form input,
-#scratchpad {
-    width: 100%;
-    padding: 12px;
-    background-color: var(--bg-dark);
-    border: 2px solid var(--border-color);
-    border-radius: 6px;
-    color: var(--text-main);
-    margin-bottom: 12px;
-    font-family: inherit;
-}
-
-#bookmark-form input:focus,
-#scratchpad:focus {
-    border-color: var(--accent-butter);
-    outline: none;
-}
-
-#scratchpad {
-    height: 180px;
-    resize: none;
-    font-family: inherit;
-    font-size: 0.85rem;
-    line-height: 1.5;
-}
-
-.btn {
-    width: 100%;
-    background-color: var(--accent-butter);
-    color: var(--bg-dark);
-    padding: 12px;
-    border: none;
-    border-radius: 6px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-.btn:hover {
-    background-color: #ffffff;
-}
-
-#custom-links-list li {
-    position: relative;
+.card .favicon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 2px;
 }
 
 .delete-link-btn {
@@ -252,181 +408,155 @@ header p {
     transform: scale(1.1);
 }
 
-.link-wrapper {
+/* ==========================================================================
+   4. SIDEBAR WORKSPACE & NOTEBOOK SYSTEM
+   ========================================================================== */
+.sidebar {
     display: flex;
-    align-items: center;
-    gap: 10px;
+    flex-direction: column;
+    gap: 20px;
 }
 
-.favicon {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.1);
-    padding: 4px;
+.tool-box {
+    background-color: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    padding: 20px;
 }
 
-.menu-list {
+.tool-box h4 {
+    margin-bottom: 15px;
+    font-size: 0.95rem;
+    color: var(--accent-butter);
+}
+
+.note-list-menu {
     list-style: none;
+    margin: 0 0 15px 0;
+    padding: 0;
     display: flex;
     flex-direction: column;
     gap: 5px;
+    max-height: 160px;
+    overflow-y: auto;
+    padding-right: 4px;
 }
 
-.menu-list li {
-    padding: 12px 15px;
+.note-list-menu::-webkit-scrollbar {
+    width: 4px;
+}
+
+.note-list-menu::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+}
+
+.note-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    border-radius: 6px;
     cursor: pointer;
-    border-radius: 8px;
+    font-size: 0.9rem;
     color: var(--text-muted);
-    font-weight: 500;
+    background-color: transparent;
+    border: none;
     transition: all 0.2s ease;
 }
 
-.menu-list li:hover {
+.note-list-item:hover {
     background-color: rgba(4, 75, 66, 0.4);
     color: var(--text-main);
 }
 
-.menu-list li.active {
+.note-list-item.active {
     background-color: var(--border-color);
     color: var(--accent-butter);
     font-weight: 600;
 }
 
-.auth-container {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    width: 100%;
-}
-
-#user-profile {
-    background-color: var(--card-bg);
-    border: 2px solid var(--border-color);
-    border-radius: 8px;
-    position: relative;
-    width: 100%;
-    height: 52px;
-    box-sizing: border-box;
-    cursor: pointer;
-    user-select: none;
-    transition: border-color 0.2s ease;
-}
-
-#user-profile:hover {
-    border-color: var(--text-muted);
-}
-
-.profile-trigger {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    height: 100%;
-    padding: 0 16px;
-    gap: 12px;
-}
-
-.user-avatar {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    border: 1px solid var(--accent-butter);
-}
-
-#user-name {
-    font-family: 'JetBrains Mono', monospace;
-    font-weight: 500;
-    font-size: 0.9rem;
-    color: var(--accent-butter);
+.note-title {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    flex-grow: 1;
+    max-width: 85%;
 }
 
-.dropdown-arrow {
-    font-size: 0.65rem;
-    color: var(--text-muted);
-    transition: transform 0.2s ease;
+.delete-note-btn {
+    background: none !important;
+    border: none !important;
+    color: rgba(251, 235, 194, 0.4) !important;
+    cursor: pointer !important;
+    font-size: 1.1rem !important;
+    line-height: 1 !important;
+    padding: 0 2px !important;
 }
 
-#user-profile.active .dropdown-arrow {
-    transform: rotate(180deg);
+.delete-note-btn:hover {
+    color: var(--delete-red) !important;
 }
 
-.dropdown-menu {
-    display: none;
-    position: absolute;
-    top: 58px;
-    right: 0;
-    background-color: var(--card-bg);
+#scratchpad {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--bg-dark);
     border: 2px solid var(--border-color);
-    border-radius: 8px;
-    width: 100%;
-    min-width: 180px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-    z-index: 100;
-    overflow: hidden;
-}
-
-.dropdown-menu.show {
-    display: block;
-}
-
-.dropdown-item {
-    padding: 12px 16px;
-    font-size: 0.85rem;
+    border-radius: 6px;
     color: var(--text-main);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: none;
-    border: none;
-    width: 100%;
-    text-align: left;
+    margin-bottom: 12px;
     font-family: inherit;
-    cursor: pointer;
+    height: 180px;
+    resize: none;
+    font-size: 0.85rem;
+    line-height: 1.5;
 }
 
-.dropdown-item:hover {
-    background-color: rgba(4, 75, 66, 0.4);
+#scratchpad:focus {
+    border-color: var(--accent-butter);
+    outline: none;
 }
 
-.dropdown-divider {
-    border: 0;
-    border-top: 1px solid var(--border-color);
-    margin: 0;
+#scratchpad:disabled {
+    background-color: rgba(0, 0, 0, 0.25);
+    color: rgba(255, 255, 255, 0.3);
+    cursor: not-allowed;
+    border-style: dashed;
 }
 
-.logout-action {
-    color: var(--delete-red);
-    font-weight: 600;
+/* ==========================================================================
+   5. MODAL SYSTEMS & GENERAL FORM ELEMENTS
+   ========================================================================== */
+#bookmark-form input {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--bg-dark);
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-main);
+    margin-bottom: 12px;
+    font-family: inherit;
 }
 
-.status-dot {
-    width: 8px;
-    height: 8px;
-    background-color: #4cd137;
-    border-radius: 50%;
+#bookmark-form input:focus {
+    border-color: var(--accent-butter);
+    outline: none;
 }
 
-.logout-btn {
-    background-color: rgba(255, 135, 135, 0.1);
-    color: var(--delete-red);
-    border: 1px solid var(--delete-red);
-    padding: 4px 10px;
-    border-radius: 4px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.8rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.logout-btn:hover {
-    background-color: var(--delete-red);
+.btn {
+    width: 100%;
+    background-color: var(--accent-butter);
     color: var(--bg-dark);
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn:hover {
+    background-color: #ffffff;
 }
 
 .modal-overlay {
@@ -438,7 +568,7 @@ header p {
     height: 100%;
     background-color: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(4px);
-    z-index: 1000;
+    z-index: 2000;
     justify-content: center;
     align-items: center;
 }
@@ -491,121 +621,24 @@ header p {
     box-sizing: border-box;
 }
 
-#open-modal-btn {
-    padding: 6px 14px;
-    font-size: 0.85rem;
-    width: fit-content;
-    border-radius: 6px;
-    white-space: nowrap;
-}
-
-/* --- Vertical Note List Menu --- */
-.note-list-menu {
-    list-style: none;
-    margin: 0 0 15px 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    max-height: 160px;
-    overflow-y: auto;
-    padding-right: 4px;
-}
-
-.note-list-menu::-webkit-scrollbar {
-    width: 4px;
-}
-
-.note-list-menu::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 4px;
-}
-
-.note-list-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 15px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.95rem;
-    color: var(--text-muted);
-    background-color: transparent;
-    border: none;
-    transition: all 0.2s ease;
-}
-
-.note-list-item:hover {
-    background-color: rgba(4, 75, 66, 0.4);
-    color: var(--text-main);
-}
-
-.note-list-item.active {
-    background-color: var(--border-color);
-    color: var(--accent-butter);
-    font-weight: 600;
-}
-
-.note-title {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 85%;
-}
-
-.delete-note-btn {
-    background: none !important;
-    border: none !important;
-    color: rgba(251, 235, 194, 0.4) !important;
-    cursor: pointer !important;
-    font-size: 1.2rem !important;
-    line-height: 1 !important;
-    padding: 0 2px !important;
-    transition: color 0.2s ease;
-}
-
-.delete-note-btn:hover {
-    color: var(--delete-red) !important;
-}
-
-#scratchpad:disabled {
-    background-color: rgba(0, 0, 0, 0.25);
-    color: rgba(255, 255, 255, 0.3);
-    cursor: not-allowed;
-    border-style: dashed;
-}
-
+/* ==========================================================================
+   6. RESPONSIVE STRUCTURE STACKS
+   ========================================================================== */
 @media (max-width: 1000px) {
-
-    .main-layout,
-    header {
-        grid-template-columns: 200px 1fr;
-    }
-
-    .sidebar {
-        grid-column: 1 / -1;
-        flex-direction: row;
+    .main-layout {
+        grid-template-columns: 1fr;
     }
 }
 
 @media (max-width: 768px) {
-
-    .main-layout,
-    header {
-        grid-template-columns: 1fr;
+    .header-container {
+        flex-direction: column;
+        gap: 16px;
+        padding: 15px;
     }
 
-    header {
-        text-align: center;
-    }
-
-    header h1 {
-        text-align: center;
-        margin-bottom: 15px;
-    }
-
-    .nav-sidebar {
-        position: relative;
-        top: 0;
+    .header-bookmark-tray {
+        width: 100%;
+        max-width: 100%;
     }
 }

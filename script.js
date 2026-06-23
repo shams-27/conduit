@@ -1,7 +1,6 @@
 import { GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-const searchBar = document.getElementById('search-bar');
 const resourceCards = document.querySelectorAll('.card');
 const bookmarkForm = document.getElementById('bookmark-form');
 const linkName = document.getElementById('link-name');
@@ -28,7 +27,7 @@ const customIconMap = {
     "web.whatsapp.com": "https://img.icons8.com/color/96/whatsapp.png",
 };
 
-// --- NOTEBOOK CORE STATE & LOGIC (LOCAL STORAGE STRIPPED) ---
+// --- NOTEBOOK CORE STATE & LOGIC ---
 let notes = [];
 let activeNoteId = null;
 
@@ -36,7 +35,6 @@ function renderNoteList() {
     if (!noteListMenu) return;
     noteListMenu.innerHTML = '';
 
-    // If there are no notes, cleanly disable the scratchpad interface
     if (notes.length === 0) {
         scratchpad.value = '';
         scratchpad.placeholder = 'Click "+ New Note" above to create your first note!';
@@ -44,11 +42,9 @@ function renderNoteList() {
         return;
     }
 
-    // Enable text area if notes are present
     scratchpad.disabled = false;
     scratchpad.placeholder = 'Drop temporary code snippets, assignment dates, or commands here...';
 
-    // Verify activeNoteId fallback integrity
     const activeNoteExists = notes.some(n => n.id === activeNoteId);
     if (!activeNoteExists && notes.length > 0) {
         activeNoteId = notes[0].id;
@@ -62,7 +58,6 @@ function renderNoteList() {
             <button class="delete-note-btn" data-id="${note.id}">&times;</button>
         `;
 
-        // Switch active notebook pane on selection
         li.addEventListener('click', (e) => {
             if (e.target.classList.contains('delete-note-btn')) return;
             activeNoteId = note.id;
@@ -70,7 +65,6 @@ function renderNoteList() {
             renderNoteList();
         });
 
-        // Handle note deletion
         const deleteBtn = li.querySelector('.delete-note-btn');
         if (deleteBtn) {
             deleteBtn.addEventListener('click', (e) => {
@@ -105,8 +99,6 @@ if (addNoteBtn) {
             scratchpad.value = '';
             renderNoteList();
             saveNotes();
-
-            // Focus scrolling to bottom when list grows
             noteListMenu.scrollTop = noteListMenu.scrollHeight;
         }
     });
@@ -117,7 +109,6 @@ scratchpad.addEventListener('input', (e) => {
     const activeNote = notes.find(n => n.id === activeNoteId);
     if (activeNote) {
         activeNote.content = e.target.value;
-
         clearTimeout(typingTimer);
         typingTimer = setTimeout(() => {
             saveUserDataToCloud();
@@ -125,13 +116,7 @@ scratchpad.addEventListener('input', (e) => {
     }
 });
 
-// Setup Initial State View
-const initialActiveNote = notes.find(n => n.id === activeNoteId);
-scratchpad.value = initialActiveNote ? initialActiveNote.content : '';
-renderNoteList();
-
-
-// --- BOOKMARKS LOGIC (LOCAL STORAGE STRIPPED) ---
+// --- BOOKMARKS LOGIC ---
 let savedLinks = [];
 
 function getFaviconUrl(domain) {
@@ -145,13 +130,12 @@ function displayCustomLinks() {
     customLinksList.innerHTML = '';
 
     if (savedLinks.length === 0) {
-        customLinksList.innerHTML = `<li style="color: var(--text-muted); font-size: 0.9rem;">No custom links added yet.</li>`;
+        customLinksList.innerHTML = `<li style="color: var(--text-muted); font-size: 0.8rem; padding: 0 5px; white-space: nowrap;">Empty</li>`;
         return;
     }
 
     savedLinks.forEach((link, index) => {
         const li = document.createElement('li');
-
         let domain = '';
         try {
             domain = new URL(link.url).hostname;
@@ -162,13 +146,12 @@ function displayCustomLinks() {
         const faviconUrl = getFaviconUrl(domain);
 
         li.innerHTML = `
-            <div class="link-wrapper">
-                <img src="${faviconUrl}" class="favicon" alt="" onerror="this.style.display='none'">
-                <a href="${link.url}" target="_blank">${link.name}</a>
+            <div class="link-wrapper" title="${link.name}">
+                <a href="${link.url}" target="_blank">
+                    <img src="${faviconUrl}" class="favicon" alt="${link.name}" onerror="this.style.display='none'">
+                </a>
             </div>
-            <button class="delete-link-btn" onclick="deleteLink(${index})" aria-label="Delete Bookmark">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-            </button>
+            <button class="delete-link-btn" onclick="deleteLink(${index})" aria-label="Delete Bookmark">×</button>
         `;
         customLinksList.appendChild(li);
     });
@@ -176,16 +159,10 @@ function displayCustomLinks() {
 
 bookmarkForm.addEventListener('submit', (e) => {
     e.preventDefault();
-
-    const newLink = {
-        name: linkName.value,
-        url: linkUrl.value
-    };
-
+    const newLink = { name: linkName.value, url: linkUrl.value };
     savedLinks.push(newLink);
     displayCustomLinks();
     saveUserDataToCloud();
-
     linkName.value = '';
     linkUrl.value = '';
 });
@@ -196,10 +173,7 @@ window.deleteLink = function (index) {
     saveUserDataToCloud();
 }
 
-displayCustomLinks();
-
-
-// --- FILTER & STATIC SEARCH LOGIC ---
+// --- STATIC LINKS ICON GENERATION ---
 function displayStaticLinksIcons() {
     const staticLinks = document.querySelectorAll('.card:not([data-category="custom personal favorites"]) .link-list a');
 
@@ -212,7 +186,6 @@ function displayStaticLinksIcons() {
         }
 
         const faviconUrl = getFaviconUrl(domain);
-
         const wrapper = document.createElement('div');
         wrapper.className = 'link-wrapper';
 
@@ -228,9 +201,13 @@ function displayStaticLinksIcons() {
     });
 }
 
+// Initialize Lists and Icons
 displayStaticLinksIcons();
+displayCustomLinks();
+renderNoteList();
 
-const menuItems = document.querySelectorAll('.menu-list li');
+// --- CATEGORY NAV FILTER LOGIC ---
+const menuItems = document.querySelectorAll('#category-menu li');
 
 function applyCategoryFilter(targetId) {
     resourceCards.forEach(card => {
@@ -245,45 +222,15 @@ function applyCategoryFilter(targetId) {
 menuItems.forEach(item => {
     item.addEventListener('click', () => {
         menuItems.forEach(i => i.classList.remove('active'));
-
         item.classList.add('active');
-
         const target = item.getAttribute('data-target');
         applyCategoryFilter(target);
-
-        if (searchBar.value !== '') {
-            searchBar.value = '';
-        }
     });
 });
-
-searchBar.addEventListener('keyup', (e) => {
-    const term = e.target.value.toLowerCase();
-
-    if (term === '') {
-        const activeTarget = document.querySelector('.menu-list li.active').getAttribute('data-target');
-        applyCategoryFilter(activeTarget);
-        return;
-    }
-
-    resourceCards.forEach(card => {
-        const categoryData = card.getAttribute('data-category');
-        const keywords = categoryData ? categoryData.toLowerCase() : "";
-        const contentText = card.textContent.toLowerCase();
-
-        if (keywords.includes(term) || contentText.includes(term)) {
-            card.style.display = "block";
-        } else {
-            card.style.display = "none";
-        }
-    });
-});
-
 
 // --- CLOUD SYNC LOGIC ---
 async function saveUserDataToCloud() {
     if (!window.auth.currentUser) return;
-
     try {
         const userId = window.auth.currentUser.uid;
         await setDoc(doc(window.db, "users", userId), {
@@ -323,12 +270,7 @@ onAuthStateChanged(window.auth, async (user) => {
         if (docSnap.exists()) {
             const data = docSnap.data();
             savedLinks = data.links || [];
-
-            if (data.notes) {
-                notes = data.notes;
-            } else {
-                notes = [];
-            }
+            notes = data.notes || [];
         } else {
             savedLinks = [];
             notes = [];
@@ -346,7 +288,6 @@ onAuthStateChanged(window.auth, async (user) => {
         userProfile.style.display = 'none';
         userNameSpan.textContent = '';
 
-        // Reset to empty arrays upon logging out
         savedLinks = [];
         notes = [];
         activeNoteId = null;
@@ -357,8 +298,7 @@ onAuthStateChanged(window.auth, async (user) => {
     }
 });
 
-
-// --- AUTH INTERFACE UI BINDINGS ---
+// --- AUTH UI BINDINGS ---
 const profileTrigger = document.getElementById('profile-trigger');
 const dropdownMenu = document.getElementById('dropdown-menu');
 const userProfileContainer = document.getElementById('user-profile');
@@ -382,8 +322,7 @@ document.getElementById('login-btn').onclick = () => {
     signInWithPopup(window.auth, provider);
 };
 
-
-// --- BOOKMARK TRIGGER MODAL UI ---
+// --- BOOKMARK MODAL ---
 const modal = document.getElementById('add-link-modal');
 const openModalBtn = document.getElementById('open-modal-btn');
 const closeModalBtn = document.getElementById('close-modal-btn');
@@ -406,7 +345,6 @@ modal.addEventListener('click', (e) => {
 
 document.getElementById('bookmark-form').addEventListener('submit', () => {
     document.getElementById('add-link-modal').classList.remove('show');
-
     setTimeout(() => {
         document.getElementById('bookmark-form').reset();
     }, 100);
