@@ -21,6 +21,19 @@
                 <button id="open-modal-btn" class="tray-add-btn" title="Add Quick Bookmark">＋</button>
             </div>
 
+            <div class="hub-dropdown-container" id="diu-hub-dropdown">
+                <div class="hub-trigger" id="hub-trigger">
+                    <span>DIU Hub</span>
+                    <span class="hub-arrow">▼</span>
+                </div>
+                <div class="hub-menu" id="hub-menu">
+                    <a href="https://studentportal.diu.edu.bd/" target="_blank" class="hub-item">Student Portal</a>
+                    <a href="https://elearn.daffodilvarsity.edu.bd/" target="_blank" class="hub-item">BLC</a>
+                    <a href="https://diucampusschedule.app/dashboard" target="_blank" class="hub-item">Campus Schedule</a>
+                    <a href="https://www.diuroutine.com/" target="_blank" class="hub-item">DIU Routine (SWE)</a>
+                </div>      
+            </div>
+
             <div class="header-actions">
                 <div class="auth-container">
 
@@ -58,6 +71,7 @@
                     <ul class="link-list">
                         <li><a href="https://claude.ai" target="_blank">Claude AI</a></li>
                         <li><a href="https://gemini.google.com" target="_blank">Gemini</a></li>
+                        <li><a href="https://notebooklm.google/" target="_blank">NotebookLM</a></li>
                         <li><a href="https://grok.com" target="_blank">Grok</a></li>
                         <li><a href="https://perplexity.ai" target="_blank">Perplexity</a></li>
                         <li><a href="https://chatgpt.com" target="_blank">ChatGPT</a></li>
@@ -103,8 +117,8 @@
                     </ul>
                 </section>
 
-                <section class="card" id="careee-interships">
-                    <h3>Career & Internships</h3>
+                <section class="card" id="career">
+                    <h3>Career</h3>
                     <ul class="link-list">
                         <li><a href="https://www.levels.fyi" target="_blank">Levels.fyi</a></li>
                         <li><a href="https://www.linkedin.com" target="_blank">LinkedIn</a></li>
@@ -131,26 +145,6 @@
                 </div>
 
             </main>
-
-            <aside class="sidebar">
-                <div class="tool-box" id="scratchpad-section">
-
-                    <div
-                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 12px;">
-                        <h4 style="margin: 0; white-space: nowrap;">Notebook</h4>
-                        <button id="add-note-btn" class="btn"
-                            style="padding: 6px 14px; font-size: 0.85rem; width: max-content; white-space: nowrap; flex-shrink: 0;">+
-                            New Note</button>
-                    </div>
-
-                    <ul id="note-list" class="note-list-menu"></ul>
-
-                    <textarea id="scratchpad"
-                        placeholder="Drop temporary code snippets, assignment dates, or commands here..."></textarea>
-
-                </div>
-            </aside>
-
         </div>
     </div>
 

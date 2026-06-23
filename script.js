@@ -1,22 +1,32 @@
 import { GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+/* ==========================================================================
+   1. DOM ELEMENT SELECTORS & GLOBAL CONFIGURATIONS
+   ========================================================================== */
 const resourceCards = document.querySelectorAll('.card');
 const bookmarkForm = document.getElementById('bookmark-form');
 const linkName = document.getElementById('link-name');
 const linkUrl = document.getElementById('link-url');
 const customLinksList = document.getElementById('custom-links-list');
-const scratchpad = document.getElementById('scratchpad');
-const provider = new GoogleAuthProvider();
+
+// Auth DOM Elements
 const loginBtn = document.getElementById('login-btn');
-const userProfile = document.getElementById('user-profile');
+const userProfileContainer = document.getElementById('user-profile');
+const profileTrigger = document.getElementById('profile-trigger');
+const dropdownMenu = document.getElementById('dropdown-menu');
 const userNameSpan = document.getElementById('user-name');
+const userAvatar = document.getElementById('user-avatar');
 const logoutBtn = document.getElementById('logout-btn');
 
-// Notebook Elements
-const noteListMenu = document.getElementById('note-list');
-const addNoteBtn = document.getElementById('add-note-btn');
+// DIU Hub Dropdown DOM Elements
+const hubDropdown = document.getElementById('diu-hub-dropdown');
+const hubTrigger = document.getElementById('hub-trigger');
+const hubMenu = document.getElementById('hub-menu');
 
+const provider = new GoogleAuthProvider();
+
+// Custom Domain Mapping for Icons
 const customIconMap = {
     "docs.google.com": "https://img.icons8.com/color/96/google-docs--v1.png",
     "sheets.google.com": "https://img.icons8.com/color/96/google-sheets.png",
@@ -27,98 +37,11 @@ const customIconMap = {
     "web.whatsapp.com": "https://img.icons8.com/color/96/whatsapp.png",
 };
 
-// --- NOTEBOOK CORE STATE & LOGIC ---
-let notes = [];
-let activeNoteId = null;
-
-function renderNoteList() {
-    if (!noteListMenu) return;
-    noteListMenu.innerHTML = '';
-
-    if (notes.length === 0) {
-        scratchpad.value = '';
-        scratchpad.placeholder = 'Click "+ New Note" above to create your first note!';
-        scratchpad.disabled = true;
-        return;
-    }
-
-    scratchpad.disabled = false;
-    scratchpad.placeholder = 'Drop temporary code snippets, assignment dates, or commands here...';
-
-    const activeNoteExists = notes.some(n => n.id === activeNoteId);
-    if (!activeNoteExists && notes.length > 0) {
-        activeNoteId = notes[0].id;
-    }
-
-    notes.forEach(note => {
-        const li = document.createElement('li');
-        li.className = `note-list-item ${note.id === activeNoteId ? 'active' : ''}`;
-        li.innerHTML = `
-            <span class="note-title">${note.title}</span>
-            <button class="delete-note-btn" data-id="${note.id}">&times;</button>
-        `;
-
-        li.addEventListener('click', (e) => {
-            if (e.target.classList.contains('delete-note-btn')) return;
-            activeNoteId = note.id;
-            scratchpad.value = note.content;
-            renderNoteList();
-        });
-
-        const deleteBtn = li.querySelector('.delete-note-btn');
-        if (deleteBtn) {
-            deleteBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                if (confirm(`Delete "${note.title}"?`)) {
-                    notes = notes.filter(n => n.id !== note.id);
-                    if (activeNoteId === note.id) {
-                        activeNoteId = notes[0]?.id || null;
-                    }
-                    saveNotes();
-                    renderNoteList();
-                    const activeNote = notes.find(n => n.id === activeNoteId);
-                    scratchpad.value = activeNote ? activeNote.content : '';
-                }
-            });
-        }
-        noteListMenu.appendChild(li);
-    });
-}
-
-function saveNotes() {
-    saveUserDataToCloud();
-}
-
-if (addNoteBtn) {
-    addNoteBtn.addEventListener('click', () => {
-        const title = prompt("Enter note title:", "New Note");
-        if (title && title.trim() !== '') {
-            const newNote = { id: Date.now().toString(), title: title.trim(), content: '' };
-            notes.push(newNote);
-            activeNoteId = newNote.id;
-            scratchpad.value = '';
-            renderNoteList();
-            saveNotes();
-            noteListMenu.scrollTop = noteListMenu.scrollHeight;
-        }
-    });
-}
-
-let typingTimer;
-scratchpad.addEventListener('input', (e) => {
-    const activeNote = notes.find(n => n.id === activeNoteId);
-    if (activeNote) {
-        activeNote.content = e.target.value;
-        clearTimeout(typingTimer);
-        typingTimer = setTimeout(() => {
-            saveUserDataToCloud();
-        }, 1000);
-    }
-});
-
-// --- BOOKMARKS LOGIC ---
 let savedLinks = [];
 
+/* ==========================================================================
+   2. HELPER UTILITIES & DROPDOWN RESETS
+   ========================================================================== */
 function getFaviconUrl(domain) {
     if (customIconMap[domain]) {
         return customIconMap[domain];
@@ -126,6 +49,49 @@ function getFaviconUrl(domain) {
     return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
 }
 
+// Resets and closes all navigation menus safely on outside click
+const closeAllDropdowns = () => {
+    dropdownMenu.classList.remove('show');
+    userProfileContainer.classList.remove('active');
+    hubMenu.classList.remove('show');
+    hubDropdown.classList.remove('active');
+};
+
+/* ==========================================================================
+   3. NAVIGATION DROPDOWN INTERACTION CONTROLLERS
+   ========================================================================== */
+// User Profile Click Handler
+profileTrigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+
+    // Close the DIU Hub dropdown to prevent layout clutter
+    hubMenu.classList.remove('show');
+    hubDropdown.classList.remove('active');
+
+    // Toggle Profile menu
+    dropdownMenu.classList.toggle('show');
+    userProfileContainer.classList.toggle('active');
+});
+
+// DIU Hub Click Handler
+hubTrigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+
+    // Close the Profile dropdown to prevent layout clutter
+    dropdownMenu.classList.remove('show');
+    userProfileContainer.classList.remove('active');
+
+    // Toggle DIU Hub menu
+    hubMenu.classList.toggle('show');
+    hubDropdown.classList.toggle('active');
+});
+
+// Close open submenus if focus shifts anywhere else on the window frame
+document.addEventListener('click', closeAllDropdowns);
+
+/* ==========================================================================
+   4. CUSTOM BOOKMARKS MANAGEMENT (TRAY LOGIC)
+   ========================================================================== */
 function displayCustomLinks() {
     customLinksList.innerHTML = '';
 
@@ -171,9 +137,11 @@ window.deleteLink = function (index) {
     savedLinks.splice(index, 1);
     displayCustomLinks();
     saveUserDataToCloud();
-}
+};
 
-// --- STATIC LINKS ICON GENERATION ---
+/* ==========================================================================
+   5. STATIC LINKS FAIVCON INJECTION
+   ========================================================================== */
 function displayStaticLinksIcons() {
     const staticLinks = document.querySelectorAll('.card:not([data-category="custom personal favorites"]) .link-list a');
 
@@ -201,12 +169,13 @@ function displayStaticLinksIcons() {
     });
 }
 
-// Initialize Lists and Icons
+// Fire initial generation operations
 displayStaticLinksIcons();
 displayCustomLinks();
-renderNoteList();
 
-// --- CATEGORY NAV FILTER LOGIC ---
+/* ==========================================================================
+   6. CATEGORY NAVIGATION FILTER ACTION
+   ========================================================================== */
 const menuItems = document.querySelectorAll('#category-menu li');
 
 function applyCategoryFilter(targetId) {
@@ -228,14 +197,15 @@ menuItems.forEach(item => {
     });
 });
 
-// --- CLOUD SYNC LOGIC ---
+/* ==========================================================================
+   7. CLOUD DATA SYNCHRONIZATION (FIREBASE AUTH & FIRESTORE)
+   ========================================================================== */
 async function saveUserDataToCloud() {
     if (!window.auth.currentUser) return;
     try {
         const userId = window.auth.currentUser.uid;
         await setDoc(doc(window.db, "users", userId), {
             links: savedLinks,
-            notes: notes,
             updatedAt: new Date()
         });
         console.log("Cloud synchronized successfully!");
@@ -245,14 +215,9 @@ async function saveUserDataToCloud() {
 }
 
 onAuthStateChanged(window.auth, async (user) => {
-    const loginBtn = document.getElementById('login-btn');
-    const userProfile = document.getElementById('user-profile');
-    const userNameSpan = document.getElementById('user-name');
-    const userAvatar = document.getElementById('user-avatar');
-
     if (user) {
         loginBtn.style.display = 'none';
-        userProfile.style.display = 'flex';
+        userProfileContainer.style.display = 'flex';
 
         const firstName = user.displayName ? user.displayName.split(' ')[0] : 'User';
         userNameSpan.textContent = `Hi, ${firstName}`;
@@ -270,59 +235,36 @@ onAuthStateChanged(window.auth, async (user) => {
         if (docSnap.exists()) {
             const data = docSnap.data();
             savedLinks = data.links || [];
-            notes = data.notes || [];
         } else {
             savedLinks = [];
-            notes = [];
             await saveUserDataToCloud();
         }
 
-        activeNoteId = notes[0]?.id || null;
-        const cloudActiveNote = notes.find(n => n.id === activeNoteId);
-        scratchpad.value = cloudActiveNote ? cloudActiveNote.content : '';
-
         displayCustomLinks();
-        renderNoteList();
     } else {
         loginBtn.style.display = 'block';
-        userProfile.style.display = 'none';
+        userProfileContainer.style.display = 'none';
         userNameSpan.textContent = '';
 
         savedLinks = [];
-        notes = [];
-        activeNoteId = null;
-        scratchpad.value = '';
-
         displayCustomLinks();
-        renderNoteList();
     }
 });
 
-// --- AUTH UI BINDINGS ---
-const profileTrigger = document.getElementById('profile-trigger');
-const dropdownMenu = document.getElementById('dropdown-menu');
-const userProfileContainer = document.getElementById('user-profile');
-
-profileTrigger.addEventListener('click', (e) => {
-    e.stopPropagation();
-    dropdownMenu.classList.toggle('show');
-    userProfileContainer.classList.toggle('active');
-});
-
-document.addEventListener('click', () => {
-    dropdownMenu.classList.remove('show');
-    userProfileContainer.classList.remove('active');
-});
-
+// Authentication Primary Call Trigger Hooks
 logoutBtn.onclick = () => {
-    signOut(window.auth).catch((error) => console.error("Logout Error:", error));
+    signOut(window.auth)
+        .then(() => closeAllDropdowns())
+        .catch((error) => console.error("Logout Error:", error));
 };
 
-document.getElementById('login-btn').onclick = () => {
+loginBtn.onclick = () => {
     signInWithPopup(window.auth, provider);
 };
 
-// --- BOOKMARK MODAL ---
+/* ==========================================================================
+   8. QUICK ADD LINK MODAL SYSTEM
+   ========================================================================== */
 const modal = document.getElementById('add-link-modal');
 const openModalBtn = document.getElementById('open-modal-btn');
 const closeModalBtn = document.getElementById('close-modal-btn');
@@ -343,9 +285,9 @@ modal.addEventListener('click', (e) => {
     }
 });
 
-document.getElementById('bookmark-form').addEventListener('submit', () => {
-    document.getElementById('add-link-modal').classList.remove('show');
+bookmarkForm.addEventListener('submit', () => {
+    modal.classList.remove('show');
     setTimeout(() => {
-        document.getElementById('bookmark-form').reset();
+        bookmarkForm.reset();
     }, 100);
 });
