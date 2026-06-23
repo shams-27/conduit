@@ -76,7 +76,7 @@ body {
 
 .header-container h1 {
     font-family: 'Blue Spirits', sans-serif;
-    font-weight: 700;
+    font-weight: 100;
     font-style: italic;
     font-size: 2.5rem;
     color: var(--accent-butter);
