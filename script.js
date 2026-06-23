@@ -33,7 +33,7 @@ const customIconMap = {
     "slides.google.com": "https://img.icons8.com/color/96/google-slides.png",
     "drive.google.com": "https://img.icons8.com/color/96/google-drive.png",
     "www.gmail.com": "https://img.icons8.com/color/96/gmail.png",
-    "github.com": "https://github.githubassets.com/favicons/favicon.svg",
+    "github.com": "https://img.icons8.com/?size=100&id=YSWCDCSF4H3N&format=png&color=FFFFFF",
     "web.whatsapp.com": "https://img.icons8.com/color/96/whatsapp.png",
 };
 
