@@ -42,7 +42,8 @@ conduit/
 ├── index.html      # Layout and bookmark sections
 ├── style.css       # Styling and responsive design
 ├── script.js       # Auth, sync, and bookmark logic
-└── fonts/          # Custom font assets
+├── fonts/          # Custom font assets
+└── cursors/        # Custom cursor assets
 ```
 
 ---
