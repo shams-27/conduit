@@ -28,13 +28,15 @@ const provider = new GoogleAuthProvider();
 
 // Custom Domain Mapping for Icons
 const customIconMap = {
-    "docs.google.com": "https://img.icons8.com/color/96/google-docs--v1.png",
-    "sheets.google.com": "https://img.icons8.com/color/96/google-sheets.png",
-    "slides.google.com": "https://img.icons8.com/color/96/google-slides.png",
-    "drive.google.com": "https://img.icons8.com/color/96/google-drive.png",
-    "www.gmail.com": "https://img.icons8.com/color/96/gmail.png",
+    "docs.google.com": "https://img.icons8.com/?size=100&id=hHRwFYjODaR4&format=png&color=000000",
+    "sheets.google.com": "https://img.icons8.com/?size=100&id=qrAVeBIrsjod&format=png&color=000000",
+    "slides.google.com": "https://img.icons8.com/?size=100&id=joSAjc9l7dOp&format=png&color=000000",
+    "drive.google.com": "https://img.icons8.com/?size=100&id=eKDChMKt75eu&format=png&color=000000",
+    "www.gmail.com": "https://img.icons8.com/?size=100&id=qyRpAggnV0zH&format=png&color=000000",
     "github.com": "https://img.icons8.com/?size=100&id=YSWCDCSF4H3N&format=png&color=FFFFFF",
-    "web.whatsapp.com": "https://img.icons8.com/color/96/whatsapp.png",
+    "web.whatsapp.com": "https://img.icons8.com/?size=100&id=AltfLkFSP7XN&format=png&color=000000",
+    "passwords.google.com": "https://img.icons8.com/?size=100&id=KeCyyDy6KmOt&format=png&color=000000",
+    "claude.ai": "https://img.icons8.com/?size=100&id=zQjzFjPpT2Ek&format=png&color=000000"
 };
 
 let savedLinks = [];
