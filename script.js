@@ -144,6 +144,34 @@ window.deleteLink = function (index) {
 /* ==========================================================================
    5. STATIC LINKS FAIVCON INJECTION
    ========================================================================== */
+function sortHubMenu() {
+    const hubMenu = document.getElementById('hub-menu');
+    if (!hubMenu) return;
+
+    const items = Array.from(hubMenu.querySelectorAll('.hub-item'));
+    items.sort((a, b) => a.textContent.trim().localeCompare(b.textContent.trim()));
+    items.forEach(item => hubMenu.appendChild(item));
+}
+
+function sortMainLayoutLinks() {
+    const cards = document.querySelectorAll('.resources-grid .card');
+
+    cards.forEach(card => {
+        const list = card.querySelector('.link-list');
+        if (!list) return;
+
+        const items = Array.from(list.querySelectorAll('li'));
+
+        items.sort((a, b) => {
+            const textA = a.querySelector('a')?.textContent.trim() || '';
+            const textB = b.querySelector('a')?.textContent.trim() || '';
+            return textA.localeCompare(textB);
+        });
+
+        items.forEach(item => list.appendChild(item));
+    });
+}
+
 function displayStaticLinksIcons() {
     const staticLinks = document.querySelectorAll('.card:not([data-category="custom personal favorites"]) .link-list a');
 
@@ -172,7 +200,9 @@ function displayStaticLinksIcons() {
 }
 
 // Fire initial generation operations
-displayStaticLinksIcons();
+sortHubMenu();         
+sortMainLayoutLinks();  
+displayStaticLinksIcons(); 
 displayCustomLinks();
 
 /* ==========================================================================

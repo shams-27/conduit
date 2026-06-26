@@ -536,6 +536,7 @@ body {
     padding: 12px;
     border: none;
     border-radius: 6px;
+    font-family: inherit;
     font-weight: 700;
     cursor: pointer;
     transition: background 0.2s, transform 0.1s;
