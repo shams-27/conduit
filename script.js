@@ -67,11 +67,9 @@ const closeAllDropdowns = () => {
 profileTrigger.addEventListener('click', (e) => {
     e.stopPropagation();
 
-    // Close the DIU Hub dropdown to prevent layout clutter
     hubMenu.classList.remove('show');
     hubDropdown.classList.remove('active');
 
-    // Toggle Profile menu
     dropdownMenu.classList.toggle('show');
     userProfileContainer.classList.toggle('active');
 });
@@ -80,11 +78,9 @@ profileTrigger.addEventListener('click', (e) => {
 hubTrigger.addEventListener('click', (e) => {
     e.stopPropagation();
 
-    // Close the Profile dropdown to prevent layout clutter
     dropdownMenu.classList.remove('show');
     userProfileContainer.classList.remove('active');
 
-    // Toggle DIU Hub menu
     hubMenu.classList.toggle('show');
     hubDropdown.classList.toggle('active');
 });
@@ -323,3 +319,21 @@ bookmarkForm.addEventListener('submit', () => {
         bookmarkForm.reset();
     }, 100);
 });
+
+/* ==========================================================================
+   9. DYNAMIC MASONRY GRID LAYOUT
+   ========================================================================== */
+function applyMasonryLayout() {
+    const cards = document.querySelectorAll('.card');
+
+    cards.forEach(card => {
+        card.style.gridRowEnd = 'auto';
+        const cardHeight = card.offsetHeight;
+        const rowSpan = Math.ceil(cardHeight + 16);
+        card.style.gridRowEnd = `span ${rowSpan}`;
+    });
+}
+
+window.addEventListener('load', applyMasonryLayout);
+window.addEventListener('resize', applyMasonryLayout);
+applyMasonryLayout();
