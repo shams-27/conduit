@@ -2,6 +2,45 @@ import { GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from
 import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 /* ==========================================================================
+   VIEW TOGGLE LOGIC (WELCOME SCREEN -> DASHBOARD)
+   ========================================================================== */
+const welcomeView = document.getElementById('welcome-view');
+const dashboardView = document.getElementById('dashboard-view');
+const enterHubBtn = document.getElementById('enter-hub-btn');
+
+// a. CHECK PREVIOUS VISITS ON PAGE LOAD
+if (localStorage.getItem('conduitHubInitialized') === 'true') {
+    welcomeView.classList.add('hidden');
+    dashboardView.classList.remove('hidden');
+    dashboardView.classList.add('dashboard-visible');
+
+    if (typeof applyMasonryLayout === 'function') {
+        setTimeout(applyMasonryLayout, 50);
+    }
+}
+
+// b. BUTTON CLICK LOGIC (For First-Time Visitors)
+enterHubBtn.addEventListener('click', () => {
+
+    localStorage.setItem('conduitHubInitialized', 'true');
+
+    welcomeView.classList.add('welcome-fade-out');
+
+    setTimeout(() => {
+        welcomeView.classList.add('hidden');
+        dashboardView.classList.remove('hidden');
+
+        void dashboardView.offsetWidth;
+
+        dashboardView.classList.add('dashboard-visible');
+
+        if (typeof applyMasonryLayout === 'function') {
+            applyMasonryLayout();
+        }
+    }, 500);
+});
+
+/* ==========================================================================
    1. DOM ELEMENT SELECTORS & GLOBAL CONFIGURATIONS
    ========================================================================== */
 const resourceCards = document.querySelectorAll('.card');

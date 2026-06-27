@@ -8,6 +8,81 @@
 }
 
 /* ==========================================================================
+   WELCOME SCREEN STYLES & TRANSITIONS
+   ========================================================================== */
+.welcome-container {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    /* Added transition properties for the smooth fade/slide effect */
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.welcome-card {
+    text-align: center;
+    max-width: 420px;
+    padding: 40px 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.welcome-title {
+    font-family: 'falsepos', sans-serif;
+    font-size: 5rem;
+    color: var(--accent-butter);
+    margin-bottom: 10px;
+}
+
+.welcome-card p {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    line-height: 1.5;
+    margin-bottom: 18px;
+}
+
+#enter-hub-btn {
+    background-color: var(--accent-butter);
+    color: var(--bg-dark);
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+}
+
+/* Added via JS when button is clicked */
+.welcome-fade-out {
+    opacity: 0;
+    transform: translateY(-20px);
+    pointer-events: none;
+}
+
+/* Dashboard initial hidden state for animation */
+#dashboard-view {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+/* Added via JS after welcome screen disappears */
+.dashboard-visible {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+}
+
+/* Utility class to instantly hide elements */
+.hidden {
+    display: none !important;
+}
+
+/* ==========================================================================
    1. CORE VARIABLES & GLOBAL STYLES
    ========================================================================== */
 :root {
@@ -79,7 +154,7 @@ body {
     font-family: 'falsepos', sans-serif;
     font-weight: 100;
     font-style: normal;
-    font-size: 3rem;
+    font-size: 3.2rem;
     color: var(--accent-butter);
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     white-space: nowrap;
