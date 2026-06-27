@@ -58,6 +58,11 @@ const userNameSpan = document.getElementById('user-name');
 const userAvatar = document.getElementById('user-avatar');
 const logoutBtn = document.getElementById('logout-btn');
 
+// Calender DOM Elements
+const calendarDropdown = document.getElementById('calendar-dropdown');
+const calendarTrigger = document.getElementById('calendar-trigger');
+const calendarMenu = document.getElementById('calendar-menu');
+
 // DIU Hub Dropdown DOM Elements
 const hubDropdown = document.getElementById('diu-hub-dropdown');
 const hubTrigger = document.getElementById('hub-trigger');
@@ -97,35 +102,111 @@ const closeAllDropdowns = () => {
     userProfileContainer.classList.remove('active');
     hubMenu.classList.remove('show');
     hubDropdown.classList.remove('active');
+    calendarMenu.classList.remove('show');
+    calendarDropdown.classList.remove('active');
 };
 
 /* ==========================================================================
-   3. NAVIGATION DROPDOWN INTERACTION CONTROLLERS
+   3. NAVIGATION INTERACTION CONTROLLERS
    ========================================================================== */
-// User Profile Click Handler
+
+// Profile Dropdown Trigger
 profileTrigger.addEventListener('click', (e) => {
     e.stopPropagation();
-
     hubMenu.classList.remove('show');
     hubDropdown.classList.remove('active');
+    calendarMenu.classList.remove('show');
+    calendarDropdown.classList.remove('active');
 
     dropdownMenu.classList.toggle('show');
     userProfileContainer.classList.toggle('active');
 });
 
-// DIU Hub Click Handler
+// DIU Hub Dropdown Trigger
 hubTrigger.addEventListener('click', (e) => {
     e.stopPropagation();
-
     dropdownMenu.classList.remove('show');
     userProfileContainer.classList.remove('active');
+    calendarMenu.classList.remove('show');
+    calendarDropdown.classList.remove('active');
 
     hubMenu.classList.toggle('show');
     hubDropdown.classList.toggle('active');
 });
 
-// Close open submenus if focus shifts anywhere else on the window frame
+// Calendar Dropdown Trigger
+calendarTrigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    dropdownMenu.classList.remove('show');
+    userProfileContainer.classList.remove('active');
+    hubMenu.classList.remove('show');
+    hubDropdown.classList.remove('active');
+
+    calendarMenu.classList.toggle('show');
+    calendarDropdown.classList.toggle('active');
+});
+
+// Prevent clicks inside the menus from closing them
+calendarMenu.addEventListener('click', (e) => {
+    e.stopPropagation();
+});
+hubMenu.addEventListener('click', (e) => {
+    e.stopPropagation();
+});
+dropdownMenu.addEventListener('click', (e) => {
+    e.stopPropagation();
+});
+
+// Close all menus when clicking outside
 document.addEventListener('click', closeAllDropdowns);
+
+/* ==========================================================================
+   DYNAMIC CALENDAR GENERATION LOGIC
+   ========================================================================== */
+const monthYearDisplay = document.getElementById('calendar-month-year');
+const calendarDaysContainer = document.getElementById('calendar-days');
+const prevMonthBtn = document.getElementById('prev-month');
+const nextMonthBtn = document.getElementById('next-month');
+
+let currentDate = new Date();
+
+function renderCalendar() {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+
+    const options = { month: 'long', year: 'numeric' };
+    monthYearDisplay.textContent = currentDate.toLocaleDateString('en-US', options);
+
+    const firstDayIndex = new Date(year, month, 1).getDay();
+    const lastDay = new Date(year, month + 1, 0).getDate();
+
+    const today = new Date();
+
+    let daysHTML = '';
+
+    for (let i = 0; i < firstDayIndex; i++) {
+        daysHTML += `<div class="calendar-day empty"></div>`;
+    }
+
+    for (let i = 1; i <= lastDay; i++) {
+        let isToday = i === today.getDate() && month === today.getMonth() && year === today.getFullYear();
+        daysHTML += `<div class="calendar-day ${isToday ? 'today' : ''}">${i}</div>`;
+    }
+
+    calendarDaysContainer.innerHTML = daysHTML;
+}
+
+prevMonthBtn.addEventListener('click', () => {
+    currentDate.setMonth(currentDate.getMonth() - 1);
+    renderCalendar();
+});
+
+nextMonthBtn.addEventListener('click', () => {
+    currentDate.setMonth(currentDate.getMonth() + 1);
+    renderCalendar();
+});
+
+renderCalendar();
 
 /* ==========================================================================
    4. CUSTOM BOOKMARKS MANAGEMENT (TRAY LOGIC)
