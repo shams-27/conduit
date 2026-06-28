@@ -10,6 +10,125 @@
 /* ==========================================================================
    WELCOME SCREEN STYLES & TRANSITIONS
    ========================================================================== */
+
+@keyframes fade-up {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes card-rise {
+    from {
+        opacity: 0;
+        transform: translateY(36px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes divider-expand {
+    from {
+        opacity: 0;
+        width: 0;
+    }
+
+    to {
+        opacity: 1;
+        width: 48px;
+    }
+}
+
+@keyframes typewriter {
+    from {
+        width: 0;
+    }
+
+    to {
+        width: 100%;
+    }
+}
+
+
+
+@keyframes orb-drift-1 {
+
+    0%,
+    100% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    50% {
+        transform: translate(40px, -50px) scale(1.08);
+    }
+}
+
+@keyframes orb-drift-2 {
+
+    0%,
+    100% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    50% {
+        transform: translate(-30px, 40px) scale(1.05);
+    }
+}
+
+@keyframes orb-drift-3 {
+
+    0%,
+    100% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    50% {
+        transform: translate(20px, 30px) scale(1.06);
+    }
+}
+
+@keyframes badge-blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.4;
+    }
+}
+
+@property --border-angle {
+    syntax: '<angle>';
+    inherits: false;
+    initial-value: 0deg;
+}
+
+@keyframes border-rotate {
+    to {
+        --border-angle: 360deg;
+    }
+}
+
 .welcome-container {
     height: 100vh;
     width: 100vw;
@@ -17,44 +136,197 @@
     align-items: center;
     justify-content: center;
     padding: 20px;
-    /* Added transition properties for the smooth fade/slide effect */
+    position: relative;
+    overflow: hidden;
     transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
+/* Ambient orbs */
+.welcome-container::before,
+.welcome-container::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+    filter: blur(80px);
+}
+
+.welcome-container::before {
+    width: 520px;
+    height: 520px;
+    background: radial-gradient(circle, rgba(1, 90, 75, 0.45) 0%, transparent 70%);
+    top: -100px;
+    right: -80px;
+    animation: orb-drift-1 14s ease-in-out infinite;
+}
+
+.welcome-container::after {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(255, 239, 179, 0.07) 0%, transparent 70%);
+    bottom: -80px;
+    left: -60px;
+    animation: orb-drift-2 18s ease-in-out infinite;
+}
+
+/* Third orb via extra element added in HTML */
+.welcome-orb-3 {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(0, 140, 110, 0.22) 0%, transparent 70%);
+    bottom: 10%;
+    right: 10%;
+    border-radius: 50%;
+    filter: blur(70px);
+    pointer-events: none;
+    z-index: 0;
+    animation: orb-drift-3 20s ease-in-out infinite;
+}
+
+
+
 .welcome-card {
     text-align: center;
-    max-width: 420px;
-    padding: 40px 30px;
+    max-width: 460px;
+    width: 100%;
+    padding: 52px 44px 44px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: relative;
+    z-index: 2;
+    animation: card-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+
+    /* richer glass effect */
+    background: linear-gradient(145deg,
+            rgba(1, 55, 48, 0.55) 0%,
+            rgba(0, 38, 34, 0.40) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 24px;
+    box-shadow:
+        0 8px 40px rgba(0, 0, 0, 0.55),
+        0 0 0 0.5px rgba(255, 239, 179, 0.06) inset,
+        0 1px 0 rgba(255, 255, 255, 0.07) inset;
 }
 
-.welcome-title {
-    font-family: 'falsepos', sans-serif;
-    font-size: 5rem;
-    color: var(--accent-butter);
-    margin-bottom: 10px;
+/* Staggered child animations */
+.welcome-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    color: #7dd8c8;
+    background: rgba(125, 216, 200, 0.08);
+    border: 1px solid rgba(125, 216, 200, 0.2);
+    border-radius: 20px;
+    padding: 5px 14px;
+    margin-bottom: 28px;
+    text-transform: uppercase;
+    opacity: 0;
+    animation: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.4s forwards;
+}
+
+/* Divider beneath title */
+.welcome-divider {
+    height: 1.5px;
+    background: linear-gradient(90deg, transparent, rgba(255, 239, 179, 0.5), transparent);
+    margin: 18px auto 20px;
+    border-radius: 2px;
+    opacity: 0;
+    width: 0;
+    animation: divider-expand 0.5s ease 0.85s forwards;
 }
 
 .welcome-card p {
     color: var(--text-muted);
-    font-size: 1.1rem;
-    line-height: 1.5;
-    margin-bottom: 18px;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    margin-bottom: 32px;
+    max-width: 300px;
+    opacity: 0;
+    animation: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) 1.0s forwards;
+}
+
+/* Top accent bar */
+.welcome-card::before {
+    content: '';
+    position: absolute;
+    inset: -1.5px;
+    border-radius: 26px;
+    background: conic-gradient(from var(--border-angle),
+            transparent 0deg,
+            transparent 55deg,
+            rgba(255, 239, 179, 0.0) 65deg,
+            rgba(255, 239, 179, 0.85) 90deg,
+            rgba(255, 239, 179, 0.0) 115deg,
+            transparent 125deg,
+            transparent 360deg);
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    padding: 1.5px;
+    animation: border-rotate 6s linear infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.welcome-badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #4cd1b4;
+    box-shadow: 0 0 6px #4cd1b4;
+    animation: badge-blink 2.4s ease-in-out infinite;
+}
+
+.welcome-title {
+    font-family: 'falsepos', sans-serif;
+    font-size: 5.5rem;
+    color: var(--accent-butter);
+    margin-bottom: 0;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    opacity: 0;
+    animation: fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.6s forwards;
 }
 
 #enter-hub-btn {
-    background-color: var(--accent-butter);
+    background: linear-gradient(135deg, #ffefb3 0%, #ffe57a 100%);
     color: var(--bg-dark);
-    padding: 12px 20px;
+    padding: 13px 24px;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     font-family: inherit;
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 700;
     cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
+    letter-spacing: 0.04em;
+    border-radius: 12px;
+    opacity: 0;
+    animation: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) 1.2s forwards;
+    transition: background 0.25s, transform 0.15s, box-shadow 0.25s;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 1px 0 rgba(255, 255, 255, 0.2) inset;
+    position: relative;
+    overflow: hidden;
+}
+
+#enter-hub-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.18), transparent);
+    pointer-events: none;
+}
+
+#enter-hub-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), 0 1px 0 rgba(255, 255, 255, 0.2) inset;
+    background: linear-gradient(135deg, #ffffff 0%, #ffefb3 100%);
 }
 
 /* Added via JS when button is clicked */

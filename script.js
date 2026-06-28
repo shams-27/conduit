@@ -316,9 +316,9 @@ function displayStaticLinksIcons() {
 }
 
 // Fire initial generation operations
-sortHubMenu();         
-sortMainLayoutLinks();  
-displayStaticLinksIcons(); 
+sortHubMenu();
+sortMainLayoutLinks();
+displayStaticLinksIcons();
 displayCustomLinks();
 
 /* ==========================================================================
