@@ -8,355 +8,9 @@
 }
 
 /* ==========================================================================
-   WELCOME SCREEN STYLES & TRANSITIONS
-   ========================================================================== */
-
-@keyframes fade-up {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes fade-in {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes card-rise {
-    from {
-        opacity: 0;
-        transform: translateY(36px) scale(0.98);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-@keyframes divider-expand {
-    from {
-        opacity: 0;
-        width: 0;
-    }
-
-    to {
-        opacity: 1;
-        width: 48px;
-    }
-}
-
-@keyframes typewriter {
-    from {
-        width: 0;
-    }
-
-    to {
-        width: 100%;
-    }
-}
-
-
-
-@keyframes orb-drift-1 {
-
-    0%,
-    100% {
-        transform: translate(0, 0) scale(1);
-    }
-
-    50% {
-        transform: translate(40px, -50px) scale(1.08);
-    }
-}
-
-@keyframes orb-drift-2 {
-
-    0%,
-    100% {
-        transform: translate(0, 0) scale(1);
-    }
-
-    50% {
-        transform: translate(-30px, 40px) scale(1.05);
-    }
-}
-
-@keyframes orb-drift-3 {
-
-    0%,
-    100% {
-        transform: translate(0, 0) scale(1);
-    }
-
-    50% {
-        transform: translate(20px, 30px) scale(1.06);
-    }
-}
-
-@keyframes badge-blink {
-
-    0%,
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.4;
-    }
-}
-
-@property --border-angle {
-    syntax: '<angle>';
-    inherits: false;
-    initial-value: 0deg;
-}
-
-@keyframes border-rotate {
-    to {
-        --border-angle: 360deg;
-    }
-}
-
-.welcome-container {
-    height: 100vh;
-    width: 100vw;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    position: relative;
-    overflow: hidden;
-    transition: opacity 0.5s ease, transform 0.5s ease;
-}
-
-/* Ambient orbs */
-.welcome-container::before,
-.welcome-container::after {
-    content: '';
-    position: absolute;
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 0;
-    filter: blur(80px);
-}
-
-.welcome-container::before {
-    width: 520px;
-    height: 520px;
-    background: radial-gradient(circle, rgba(1, 90, 75, 0.45) 0%, transparent 70%);
-    top: -100px;
-    right: -80px;
-    animation: orb-drift-1 14s ease-in-out infinite;
-}
-
-.welcome-container::after {
-    width: 400px;
-    height: 400px;
-    background: radial-gradient(circle, rgba(255, 239, 179, 0.07) 0%, transparent 70%);
-    bottom: -80px;
-    left: -60px;
-    animation: orb-drift-2 18s ease-in-out infinite;
-}
-
-/* Third orb via extra element added in HTML */
-.welcome-orb-3 {
-    position: absolute;
-    width: 300px;
-    height: 300px;
-    background: radial-gradient(circle, rgba(0, 140, 110, 0.22) 0%, transparent 70%);
-    bottom: 10%;
-    right: 10%;
-    border-radius: 50%;
-    filter: blur(70px);
-    pointer-events: none;
-    z-index: 0;
-    animation: orb-drift-3 20s ease-in-out infinite;
-}
-
-
-
-.welcome-card {
-    text-align: center;
-    max-width: 460px;
-    width: 100%;
-    padding: 52px 44px 44px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-    z-index: 2;
-    animation: card-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
-
-    /* richer glass effect */
-    background: linear-gradient(145deg,
-            rgba(1, 55, 48, 0.55) 0%,
-            rgba(0, 38, 34, 0.40) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.10);
-    border-radius: 24px;
-    box-shadow:
-        0 8px 40px rgba(0, 0, 0, 0.55),
-        0 0 0 0.5px rgba(255, 239, 179, 0.06) inset,
-        0 1px 0 rgba(255, 255, 255, 0.07) inset;
-}
-
-/* Staggered child animations */
-.welcome-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    font-size: 0.7rem;
-    letter-spacing: 0.08em;
-    color: #7dd8c8;
-    background: rgba(125, 216, 200, 0.08);
-    border: 1px solid rgba(125, 216, 200, 0.2);
-    border-radius: 20px;
-    padding: 5px 14px;
-    margin-bottom: 28px;
-    text-transform: uppercase;
-    opacity: 0;
-    animation: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.4s forwards;
-}
-
-/* Divider beneath title */
-.welcome-divider {
-    height: 1.5px;
-    background: linear-gradient(90deg, transparent, rgba(255, 239, 179, 0.5), transparent);
-    margin: 18px auto 20px;
-    border-radius: 2px;
-    opacity: 0;
-    width: 0;
-    animation: divider-expand 0.5s ease 0.85s forwards;
-}
-
-.welcome-card p {
-    color: var(--text-muted);
-    font-size: 0.95rem;
-    line-height: 1.7;
-    margin-bottom: 32px;
-    max-width: 300px;
-    opacity: 0;
-    animation: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) 1.0s forwards;
-}
-
-/* Top accent bar */
-.welcome-card::before {
-    content: '';
-    position: absolute;
-    inset: -1.5px;
-    border-radius: 26px;
-    background: conic-gradient(from var(--border-angle),
-            transparent 0deg,
-            transparent 55deg,
-            rgba(255, 239, 179, 0.0) 65deg,
-            rgba(255, 239, 179, 0.85) 90deg,
-            rgba(255, 239, 179, 0.0) 115deg,
-            transparent 125deg,
-            transparent 360deg);
-    -webkit-mask:
-        linear-gradient(#fff 0 0) content-box,
-        linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    padding: 1.5px;
-    animation: border-rotate 6s linear infinite;
-    pointer-events: none;
-    z-index: 1;
-}
-
-.welcome-badge-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #4cd1b4;
-    box-shadow: 0 0 6px #4cd1b4;
-    animation: badge-blink 2.4s ease-in-out infinite;
-}
-
-.welcome-title {
-    font-family: 'falsepos', sans-serif;
-    font-size: 5.5rem;
-    color: var(--accent-butter);
-    margin-bottom: 0;
-    line-height: 1;
-    letter-spacing: 0.01em;
-    opacity: 0;
-    animation: fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.6s forwards;
-}
-
-#enter-hub-btn {
-    background: linear-gradient(135deg, #ffefb3 0%, #ffe57a 100%);
-    color: var(--bg-dark);
-    padding: 13px 24px;
-    border: none;
-    border-radius: 8px;
-    font-family: inherit;
-    font-size: 0.95rem;
-    font-weight: 700;
-    cursor: pointer;
-    letter-spacing: 0.04em;
-    border-radius: 12px;
-    opacity: 0;
-    animation: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) 1.2s forwards;
-    transition: background 0.25s, transform 0.15s, box-shadow 0.25s;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 1px 0 rgba(255, 255, 255, 0.2) inset;
-    position: relative;
-    overflow: hidden;
-}
-
-#enter-hub-btn::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.18), transparent);
-    pointer-events: none;
-}
-
-#enter-hub-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), 0 1px 0 rgba(255, 255, 255, 0.2) inset;
-    background: linear-gradient(135deg, #ffffff 0%, #ffefb3 100%);
-}
-
-/* Added via JS when button is clicked */
-.welcome-fade-out {
-    opacity: 0;
-    transform: translateY(-20px);
-    pointer-events: none;
-}
-
-/* Dashboard initial hidden state for animation */
-#dashboard-view {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.6s ease, transform 0.6s ease;
-}
-
-/* Added via JS after welcome screen disappears */
-.dashboard-visible {
-    opacity: 1 !important;
-    transform: translateY(0) !important;
-}
-
-/* Utility class to instantly hide elements */
-.hidden {
-    display: none !important;
-}
-
-/* ==========================================================================
    1. CORE VARIABLES & GLOBAL STYLES
    ========================================================================== */
+
 :root {
     --bg-dark: #001a17;
     --card-bg: rgba(1, 45, 40, 0.45);
@@ -384,6 +38,7 @@ body {
     position: relative;
     overflow-x: hidden;
 
+    /* Subtle dot-grid background texture */
     background-image:
         linear-gradient(rgba(194, 222, 219, 0.03) 1px, transparent 1px),
         linear-gradient(90deg, rgba(194, 222, 219, 0.03) 1px, transparent 1px);
@@ -392,7 +47,12 @@ body {
     cursor: url('cursors/minimal.png'), auto;
 }
 
-/* Base Wrapper Container */
+/* Utility class to instantly hide elements */
+.hidden {
+    display: none !important;
+}
+
+/* Base wrapper container */
 .container {
     max-width: 1440px;
     margin: 40px auto;
@@ -400,8 +60,9 @@ body {
 }
 
 /* ==========================================================================
-   2. TOP NAVIGATION HEADER & CONTROLLERS
+   2. TOP NAVIGATION HEADER
    ========================================================================== */
+
 .full-width-header {
     width: 100%;
     background-color: rgba(0, 26, 23, 0.6);
@@ -435,7 +96,11 @@ body {
     flex-shrink: 0;
 }
 
-/* DIU Hub Dropdown Container Shell */
+/* ==========================================================================
+   3. HEADER DROPDOWNS (DIU HUB & USER PROFILE)
+   ========================================================================== */
+
+/* Shared container shell for both hub and calendar dropdowns */
 .hub-dropdown-container {
     position: relative;
     height: 42px;
@@ -476,6 +141,7 @@ body {
     transform: rotate(180deg);
 }
 
+/* Shared base styles for hub menu and profile dropdown panel */
 .hub-menu,
 .dropdown-menu {
     display: none;
@@ -483,11 +149,9 @@ body {
     top: 48px;
     right: 0;
 
-    /* Strict solid background context */
+    /* Solid opaque background — prevents backdrop-filter bleed from parent */
     background: #002622 !important;
     background-color: #002622 !important;
-
-    /* Block any inherited blur engine filters */
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     filter: none !important;
@@ -522,7 +186,7 @@ body {
     color: var(--accent-butter);
 }
 
-/* User Profile Dropdown Inner Shell */
+/* User profile dropdown panel */
 .dropdown-menu {
     width: 100%;
     min-width: 180px;
@@ -551,7 +215,7 @@ body {
     background-color: rgba(255, 255, 255, 0.05);
 }
 
-/* Border Separator Lines Between Navigation Menu Options */
+/* Separator lines between menu items */
 .hub-item:not(:last-child),
 .dropdown-menu .dropdown-item:not(:last-child):not(.sync-status) {
     border-bottom: 1px solid var(--glass-border) !important;
@@ -568,6 +232,7 @@ body {
     font-weight: 600;
 }
 
+/* Cloud sync indicator dot */
 .status-dot {
     width: 6px;
     height: 6px;
@@ -577,8 +242,9 @@ body {
 }
 
 /* ==========================================================================
-   3. HEADER INTERFACES (BOOKMARK TRAY & PROFILE SECTIONS)
+   4. HEADER BOOKMARK TRAY
    ========================================================================== */
+
 .header-bookmark-tray {
     display: flex;
     align-items: center;
@@ -633,6 +299,7 @@ body {
     object-fit: contain;
 }
 
+/* Delete button — shown on hover via parent li */
 .tray-links .delete-link-btn {
     position: absolute;
     top: -4px;
@@ -656,6 +323,7 @@ body {
     display: flex;
 }
 
+/* Add bookmark (+) button */
 .tray-add-btn {
     background: transparent;
     border: 1px solid var(--glass-border);
@@ -681,6 +349,10 @@ body {
     border-color: var(--accent-butter);
     transform: scale(1.05);
 }
+
+/* ==========================================================================
+   5. HEADER AUTH & USER PROFILE SECTION
+   ========================================================================== */
 
 .header-actions {
     display: flex;
@@ -758,231 +430,9 @@ body {
 }
 
 /* ==========================================================================
-   4. APPLICATION WORKSPACE LAYOUT & RESOURCE GRIDS
-   ========================================================================= */
-.main-layout {
-    width: 100%;
-}
-
-.resources-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-    grid-auto-rows: 1px;
-    gap: 0 16px;
-    align-items: start;
-}
-
-.card {
-    background-color: var(--card-bg);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
-    border-radius: 12px;
-    padding: 18px;
-    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
-    overflow: hidden;
-}
-
-.card:hover {
-    transform: translateY(-2px);
-    border-color: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45);
-}
-
-.card h3 {
-    font-size: 1.1rem;
-    color: var(--accent-butter);
-    border-bottom: 1px solid var(--glass-border);
-    margin: -18px -18px 0 -18px;
-    padding: 18px 18px 12px 18px;
-}
-
-.link-list {
-    list-style: none;
-    margin: 0 -18px -18px -18px;
-}
-
-.link-list li {
-    display: block;
-    margin-bottom: 0;
-    border-bottom: 1px solid var(--glass-border);
-}
-
-.link-list li:last-child {
-    border-bottom: none;
-}
-
-.link-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 12px;
-    transition: background-color 0.2s;
-}
-
-.link-wrapper:hover {
-    background-color: rgba(255, 255, 255, 0.05);
-}
-
-.link-list a {
-    color: var(--text-main);
-    text-decoration: none;
-    font-weight: 400;
-    font-size: 0.95rem;
-    transition: color 0.2s;
-    width: 100%;
-    display: block;
-}
-
-.link-list a::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-}
-
-.link-wrapper:hover a {
-    color: var(--accent-butter);
-}
-
-.card .favicon {
-    width: 20px;
-    height: 20px;
-    border-radius: 4px;
-    background-color: transparent;
-    padding: 2px;
-    object-fit: contain;
-}
-
-.delete-link-btn {
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    line-height: 1;
-    cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 6px;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.delete-link-btn:hover {
-    color: var(--delete-red);
-    background-color: rgba(255, 71, 87, 0.1);
-    transform: scale(1.1);
-}
-
-/* ==========================================================================
-   5. MODAL SYSTEMS & GENERAL FORM ELEMENTS
+   6. CALENDAR DROPDOWN WIDGET
    ========================================================================== */
-#bookmark-form input {
-    width: 100%;
-    padding: 12px;
-    background-color: rgba(0, 0, 0, 0.2);
-    border: 1px solid var(--glass-border);
-    border-radius: 6px;
-    color: var(--text-main);
-    margin-bottom: 12px;
-    font-family: inherit;
-    transition: border-color 0.2s;
-}
 
-#bookmark-form input:focus {
-    border-color: var(--accent-butter);
-    outline: none;
-}
-
-.btn {
-    width: 100%;
-    background-color: var(--accent-butter);
-    color: var(--bg-dark);
-    padding: 12px;
-    border: none;
-    border-radius: 6px;
-    font-family: inherit;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
-    box-shadow: 0 4px 15px rgba(255, 239, 179, 0.2);
-}
-
-.btn:hover {
-    background-color: #ffffff;
-    transform: translateY(-1px);
-}
-
-.modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 26, 23, 0.6);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    z-index: 2000;
-    justify-content: center;
-    align-items: center;
-}
-
-.modal-overlay.show {
-    display: flex;
-}
-
-.modal-content {
-    background-color: var(--card-bg);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border);
-    border-radius: 12px;
-    padding: 24px;
-    width: 90%;
-    max-width: 400px;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.close-btn {
-    background: none;
-    border: none;
-    color: var(--text-muted);
-    font-size: 1.5rem;
-    cursor: pointer;
-    transition: color 0.2s;
-}
-
-.close-btn:hover {
-    color: var(--delete-red);
-}
-
-.input-group {
-    margin-bottom: 12px;
-}
-
-.input-group input {
-    width: 100%;
-    padding: 10px;
-    background-color: rgba(0, 0, 0, 0.2);
-    border: 1px solid var(--glass-border);
-    border-radius: 6px;
-    color: white;
-    font-family: inherit;
-    box-sizing: border-box;
-}
-
-/* ==========================================================================
-   6. CALENDAR DROPDOWN UI
-   ========================================================================== */
 .calendar-dropdown-container {
     position: relative;
     height: 42px;
@@ -1022,6 +472,7 @@ body {
     top: 48px;
     right: 0;
 
+    /* Solid background — prevents backdrop-filter bleed */
     background: #002622 !important;
     background-color: #002622 !important;
     backdrop-filter: none !important;
@@ -1123,4 +574,239 @@ body {
 
 .calendar-trigger:hover svg {
     opacity: 0.9;
+}
+
+/* ==========================================================================
+   7. APPLICATION WORKSPACE LAYOUT & RESOURCE GRID
+   ========================================================================== */
+
+.main-layout {
+    width: 100%;
+}
+
+.resources-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    grid-auto-rows: 1px;
+    gap: 0 16px;
+    align-items: start;
+}
+
+/* Resource card — glassmorphism panel */
+.card {
+    background-color: var(--card-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    border-radius: 12px;
+    padding: 18px;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45);
+}
+
+.card h3 {
+    font-size: 1.1rem;
+    color: var(--accent-butter);
+    border-bottom: 1px solid var(--glass-border);
+    margin: -18px -18px 0 -18px;
+    padding: 18px 18px 12px 18px;
+}
+
+/* ==========================================================================
+   8. RESOURCE CARD LINK LISTS
+   ========================================================================== */
+
+.link-list {
+    list-style: none;
+    margin: 0 -18px -18px -18px;
+}
+
+.link-list li {
+    display: block;
+    margin-bottom: 0;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.link-list li:last-child {
+    border-bottom: none;
+}
+
+.link-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    transition: background-color 0.2s;
+}
+
+.link-wrapper:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.link-list a {
+    color: var(--text-main);
+    text-decoration: none;
+    font-weight: 400;
+    font-size: 0.95rem;
+    transition: color 0.2s;
+    width: 100%;
+    display: block;
+}
+
+/* Extend clickable area to the full row */
+.link-list a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+}
+
+.link-wrapper:hover a {
+    color: var(--accent-butter);
+}
+
+.card .favicon {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    background-color: transparent;
+    padding: 2px;
+    object-fit: contain;
+}
+
+/* Inline delete button for custom tray bookmarks */
+.delete-link-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    line-height: 1;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.delete-link-btn:hover {
+    color: var(--delete-red);
+    background-color: rgba(255, 71, 87, 0.1);
+    transform: scale(1.1);
+}
+
+/* ==========================================================================
+   9. MODAL & FORM ELEMENTS
+   ========================================================================== */
+
+#bookmark-form input {
+    width: 100%;
+    padding: 12px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--glass-border);
+    border-radius: 6px;
+    color: var(--text-main);
+    margin-bottom: 12px;
+    font-family: inherit;
+    transition: border-color 0.2s;
+}
+
+#bookmark-form input:focus {
+    border-color: var(--accent-butter);
+    outline: none;
+}
+
+/* Primary action button (shared) */
+.btn {
+    width: 100%;
+    background-color: var(--accent-butter);
+    color: var(--bg-dark);
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    font-family: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    box-shadow: 0 4px 15px rgba(255, 239, 179, 0.2);
+}
+
+.btn:hover {
+    background-color: #ffffff;
+    transform: translateY(-1px);
+}
+
+/* Modal overlay backdrop */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 26, 23, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-overlay.show {
+    display: flex;
+}
+
+/* Modal dialog panel */
+.modal-content {
+    background-color: var(--card-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 24px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close-btn:hover {
+    color: var(--delete-red);
+}
+
+.input-group {
+    margin-bottom: 12px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--glass-border);
+    border-radius: 6px;
+    color: white;
+    font-family: inherit;
+    box-sizing: border-box;
 }
