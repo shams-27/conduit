@@ -2,54 +2,17 @@ import { GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from
 import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 /* ==========================================================================
-   VIEW TOGGLE LOGIC (WELCOME SCREEN -> DASHBOARD)
+   1. DOM ELEMENT SELECTORS & GLOBAL CONFIGURATION
    ========================================================================== */
-const welcomeView = document.getElementById('welcome-view');
-const dashboardView = document.getElementById('dashboard-view');
-const enterHubBtn = document.getElementById('enter-hub-btn');
 
-// a. CHECK PREVIOUS VISITS ON PAGE LOAD
-if (localStorage.getItem('conduitHubInitialized') === 'true') {
-    welcomeView.classList.add('hidden');
-    dashboardView.classList.remove('hidden');
-    dashboardView.classList.add('dashboard-visible');
-
-    if (typeof applyMasonryLayout === 'function') {
-        setTimeout(applyMasonryLayout, 50);
-    }
-}
-
-// b. BUTTON CLICK LOGIC (For First-Time Visitors)
-enterHubBtn.addEventListener('click', () => {
-
-    localStorage.setItem('conduitHubInitialized', 'true');
-
-    welcomeView.classList.add('welcome-fade-out');
-
-    setTimeout(() => {
-        welcomeView.classList.add('hidden');
-        dashboardView.classList.remove('hidden');
-
-        void dashboardView.offsetWidth;
-
-        dashboardView.classList.add('dashboard-visible');
-
-        if (typeof applyMasonryLayout === 'function') {
-            applyMasonryLayout();
-        }
-    }, 500);
-});
-
-/* ==========================================================================
-   1. DOM ELEMENT SELECTORS & GLOBAL CONFIGURATIONS
-   ========================================================================== */
+// Resource & Bookmark Elements
 const resourceCards = document.querySelectorAll('.card');
 const bookmarkForm = document.getElementById('bookmark-form');
 const linkName = document.getElementById('link-name');
 const linkUrl = document.getElementById('link-url');
 const customLinksList = document.getElementById('custom-links-list');
 
-// Auth DOM Elements
+// Auth Elements
 const loginBtn = document.getElementById('login-btn');
 const userProfileContainer = document.getElementById('user-profile');
 const profileTrigger = document.getElementById('profile-trigger');
@@ -58,20 +21,24 @@ const userNameSpan = document.getElementById('user-name');
 const userAvatar = document.getElementById('user-avatar');
 const logoutBtn = document.getElementById('logout-btn');
 
-// Calender DOM Elements
+// Calendar Elements
 const calendarDropdown = document.getElementById('calendar-dropdown');
 const calendarTrigger = document.getElementById('calendar-trigger');
 const calendarMenu = document.getElementById('calendar-menu');
 
-// DIU Hub Dropdown DOM Elements
+// DIU Hub Dropdown Elements
 const hubDropdown = document.getElementById('diu-hub-dropdown');
 const hubTrigger = document.getElementById('hub-trigger');
 const hubMenu = document.getElementById('hub-menu');
 
+// Firebase Auth Provider
 const provider = new GoogleAuthProvider();
 
-// Custom Domain Mapping for Icons
-const customIconMap = {
+/**
+ * Custom favicon overrides for domains where Google's favicon service
+ * returns a low-quality or incorrect icon.
+ */
+const CUSTOM_ICON_MAP = {
     "docs.google.com": "https://img.icons8.com/?size=100&id=hHRwFYjODaR4&format=png&color=000000",
     "sheets.google.com": "https://img.icons8.com/?size=100&id=qrAVeBIrsjod&format=png&color=000000",
     "slides.google.com": "https://img.icons8.com/?size=100&id=joSAjc9l7dOp&format=png&color=000000",
@@ -84,227 +51,195 @@ const customIconMap = {
     "www.leetcode.com": "https://img.icons8.com/?size=100&id=wDGo581Ea5Nf&format=png&color=000000",
 };
 
+// In-memory bookmark store; populated from localStorage or Firestore on load.
 let savedLinks = [];
 
 /* ==========================================================================
-   2. HELPER UTILITIES & DROPDOWN RESETS
+   2. HELPER UTILITIES
    ========================================================================== */
+
+/**
+ * Returns the best available favicon URL for a given domain.
+ * Falls back to Google's favicon service when no custom override exists.
+ *
+ * @param {string} domain - The hostname of the target URL.
+ * @returns {string} A URL pointing to the favicon image.
+ */
 function getFaviconUrl(domain) {
-    if (customIconMap[domain]) {
-        return customIconMap[domain];
-    }
-    return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+    return CUSTOM_ICON_MAP[domain] ?? `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
 }
 
-// Resets and closes all navigation menus safely on outside click
-const closeAllDropdowns = () => {
+/**
+ * Closes all open navigation dropdowns and removes their active state.
+ * Called on any outside click to reset the header to its default state.
+ */
+function closeAllDropdowns() {
     dropdownMenu.classList.remove('show');
     userProfileContainer.classList.remove('active');
     hubMenu.classList.remove('show');
     hubDropdown.classList.remove('active');
     calendarMenu.classList.remove('show');
     calendarDropdown.classList.remove('active');
-};
+}
 
 /* ==========================================================================
-   3. NAVIGATION INTERACTION CONTROLLERS
+   3. NAVIGATION DROPDOWN CONTROLLERS
    ========================================================================== */
 
-// Profile Dropdown Trigger
+/**
+ * Toggles a target dropdown while closing all others.
+ * Prevents click events from bubbling up to the document listener.
+ *
+ * @param {Event}    e              - The originating click event.
+ * @param {Element}  menuToToggle   - The menu element to show/hide.
+ * @param {Element}  triggerParent  - The container to mark as active.
+ */
+function toggleDropdown(e, menuToToggle, triggerParent) {
+    e.stopPropagation();
+    closeAllDropdowns();
+    menuToToggle.classList.toggle('show');
+    triggerParent.classList.toggle('active');
+}
+
+// Profile dropdown
 profileTrigger.addEventListener('click', (e) => {
-    e.stopPropagation();
-    hubMenu.classList.remove('show');
-    hubDropdown.classList.remove('active');
-    calendarMenu.classList.remove('show');
-    calendarDropdown.classList.remove('active');
-
-    dropdownMenu.classList.toggle('show');
-    userProfileContainer.classList.toggle('active');
+    toggleDropdown(e, dropdownMenu, userProfileContainer);
 });
 
-// DIU Hub Dropdown Trigger
+// DIU Hub dropdown
 hubTrigger.addEventListener('click', (e) => {
-    e.stopPropagation();
-    dropdownMenu.classList.remove('show');
-    userProfileContainer.classList.remove('active');
-    calendarMenu.classList.remove('show');
-    calendarDropdown.classList.remove('active');
-
-    hubMenu.classList.toggle('show');
-    hubDropdown.classList.toggle('active');
+    toggleDropdown(e, hubMenu, hubDropdown);
 });
 
-// Calendar Dropdown Trigger
+// Calendar dropdown
 calendarTrigger.addEventListener('click', (e) => {
-    e.stopPropagation();
-    dropdownMenu.classList.remove('show');
-    userProfileContainer.classList.remove('active');
-    hubMenu.classList.remove('show');
-    hubDropdown.classList.remove('active');
-
-    calendarMenu.classList.toggle('show');
-    calendarDropdown.classList.toggle('active');
+    toggleDropdown(e, calendarMenu, calendarDropdown);
 });
 
-// Prevent clicks inside the menus from closing them
-calendarMenu.addEventListener('click', (e) => {
-    e.stopPropagation();
-});
-hubMenu.addEventListener('click', (e) => {
-    e.stopPropagation();
-});
-dropdownMenu.addEventListener('click', (e) => {
-    e.stopPropagation();
+// Prevent clicks inside any open menu from propagating to the document
+[calendarMenu, hubMenu, dropdownMenu].forEach(menu => {
+    menu.addEventListener('click', (e) => e.stopPropagation());
 });
 
-// Close all menus when clicking outside
+// Close all menus when clicking anywhere outside them
 document.addEventListener('click', closeAllDropdowns);
 
 /* ==========================================================================
-   DYNAMIC CALENDAR GENERATION LOGIC
+   4. CALENDAR WIDGET
    ========================================================================== */
+
 const monthYearDisplay = document.getElementById('calendar-month-year');
 const calendarDaysContainer = document.getElementById('calendar-days');
 const prevMonthBtn = document.getElementById('prev-month');
 const nextMonthBtn = document.getElementById('next-month');
 
-let currentDate = new Date();
+// Tracks which month/year is currently displayed in the calendar widget
+let calendarDate = new Date();
 
+/**
+ * Renders the calendar grid for the month stored in `calendarDate`.
+ * Highlights today's date and pads the grid with empty cells to align
+ * the first day to the correct weekday column.
+ */
 function renderCalendar() {
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
-
-    const options = { month: 'long', year: 'numeric' };
-    monthYearDisplay.textContent = currentDate.toLocaleDateString('en-US', options);
-
-    const firstDayIndex = new Date(year, month, 1).getDay();
-    const lastDay = new Date(year, month + 1, 0).getDate();
-
+    const year = calendarDate.getFullYear();
+    const month = calendarDate.getMonth();
     const today = new Date();
 
-    let daysHTML = '';
+    monthYearDisplay.textContent = calendarDate.toLocaleDateString('en-US', {
+        month: 'long',
+        year: 'numeric'
+    });
 
-    for (let i = 0; i < firstDayIndex; i++) {
-        daysHTML += `<div class="calendar-day empty"></div>`;
+    const firstDayOfWeek = new Date(year, month, 1).getDay();
+    const totalDays = new Date(year, month + 1, 0).getDate();
+
+    // Empty offset cells to align day 1 to the correct weekday column
+    let html = '<div class="calendar-day empty"></div>'.repeat(firstDayOfWeek);
+
+    for (let day = 1; day <= totalDays; day++) {
+        const isToday = (
+            day === today.getDate() &&
+            month === today.getMonth() &&
+            year === today.getFullYear()
+        );
+        html += `<div class="calendar-day ${isToday ? 'today' : ''}">${day}</div>`;
     }
 
-    for (let i = 1; i <= lastDay; i++) {
-        let isToday = i === today.getDate() && month === today.getMonth() && year === today.getFullYear();
-        daysHTML += `<div class="calendar-day ${isToday ? 'today' : ''}">${i}</div>`;
-    }
-
-    calendarDaysContainer.innerHTML = daysHTML;
+    calendarDaysContainer.innerHTML = html;
 }
 
 prevMonthBtn.addEventListener('click', () => {
-    currentDate.setMonth(currentDate.getMonth() - 1);
+    calendarDate.setMonth(calendarDate.getMonth() - 1);
     renderCalendar();
 });
 
 nextMonthBtn.addEventListener('click', () => {
-    currentDate.setMonth(currentDate.getMonth() + 1);
+    calendarDate.setMonth(calendarDate.getMonth() + 1);
     renderCalendar();
 });
 
 renderCalendar();
 
 /* ==========================================================================
-   4. CUSTOM BOOKMARKS MANAGEMENT (TRAY LOGIC)
+   5. STATIC LINK ENHANCEMENTS (ICONS & SORTING)
    ========================================================================== */
-function displayCustomLinks() {
-    customLinksList.innerHTML = '';
 
-    if (savedLinks.length === 0) {
-        return;
-    }
-
-    savedLinks.forEach((link, index) => {
-        const li = document.createElement('li');
-        let domain = '';
-        try {
-            domain = new URL(link.url).hostname;
-        } catch (e) {
-            domain = '';
-        }
-
-        const faviconUrl = getFaviconUrl(domain);
-
-        li.innerHTML = `
-            <div class="link-wrapper" title="${link.name}">
-                <a href="${link.url}" target="_blank">
-                    <img src="${faviconUrl}" class="favicon" alt="${link.name}" onerror="this.style.display='none'">
-                </a>
-            </div>
-            <button class="delete-link-btn" onclick="deleteLink(${index})" aria-label="Delete Bookmark">×</button>
-        `;
-        customLinksList.appendChild(li);
-    });
-}
-
-bookmarkForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const newLink = { name: linkName.value, url: linkUrl.value };
-    savedLinks.push(newLink);
-    displayCustomLinks();
-    saveUserDataToCloud();
-    linkName.value = '';
-    linkUrl.value = '';
-});
-
-window.deleteLink = function (index) {
-    savedLinks.splice(index, 1);
-    displayCustomLinks();
-    saveUserDataToCloud();
-};
-
-/* ==========================================================================
-   5. STATIC LINKS FAIVCON INJECTION
-   ========================================================================== */
+/**
+ * Alphabetically sorts all items in the DIU Hub dropdown menu by their
+ * visible link text.
+ */
 function sortHubMenu() {
-    const hubMenu = document.getElementById('hub-menu');
-    if (!hubMenu) return;
+    const menu = document.getElementById('hub-menu');
+    if (!menu) return;
 
-    const items = Array.from(hubMenu.querySelectorAll('.hub-item'));
-    items.sort((a, b) => a.textContent.trim().localeCompare(b.textContent.trim()));
-    items.forEach(item => hubMenu.appendChild(item));
+    Array.from(menu.querySelectorAll('.hub-item'))
+        .sort((a, b) => a.textContent.trim().localeCompare(b.textContent.trim()))
+        .forEach(item => menu.appendChild(item));
 }
 
-function sortMainLayoutLinks() {
-    const cards = document.querySelectorAll('.resources-grid .card');
-
-    cards.forEach(card => {
+/**
+ * Alphabetically sorts the links within every resource card by their
+ * anchor text.
+ */
+function sortResourceCardLinks() {
+    document.querySelectorAll('.resources-grid .card').forEach(card => {
         const list = card.querySelector('.link-list');
         if (!list) return;
 
-        const items = Array.from(list.querySelectorAll('li'));
-
-        items.sort((a, b) => {
-            const textA = a.querySelector('a')?.textContent.trim() || '';
-            const textB = b.querySelector('a')?.textContent.trim() || '';
-            return textA.localeCompare(textB);
-        });
-
-        items.forEach(item => list.appendChild(item));
+        Array.from(list.querySelectorAll('li'))
+            .sort((a, b) => {
+                const textA = a.querySelector('a')?.textContent.trim() ?? '';
+                const textB = b.querySelector('a')?.textContent.trim() ?? '';
+                return textA.localeCompare(textB);
+            })
+            .forEach(item => list.appendChild(item));
     });
 }
 
-function displayStaticLinksIcons() {
-    const staticLinks = document.querySelectorAll('.card:not([data-category="custom personal favorites"]) .link-list a');
+/**
+ * Wraps each static link in a `.link-wrapper` div and prepends its
+ * favicon image. Skips the custom bookmarks card to avoid duplication
+ * (custom links handle their own icon injection via `displayCustomLinks`).
+ */
+function injectStaticLinkIcons() {
+    const staticLinks = document.querySelectorAll(
+        '.card:not([data-category="custom personal favorites"]) .link-list a'
+    );
 
     staticLinks.forEach(link => {
         let domain = '';
         try {
             domain = new URL(link.href).hostname;
-        } catch (e) {
-            return;
+        } catch {
+            return; // Skip malformed URLs
         }
 
-        const faviconUrl = getFaviconUrl(domain);
         const wrapper = document.createElement('div');
         wrapper.className = 'link-wrapper';
 
         const img = document.createElement('img');
-        img.src = faviconUrl;
+        img.src = getFaviconUrl(domain);
         img.className = 'favicon';
         img.alt = '';
         img.setAttribute('onerror', "this.style.display='none'");
@@ -315,24 +250,89 @@ function displayStaticLinksIcons() {
     });
 }
 
-// Fire initial generation operations
+// Run all static enhancements on startup
 sortHubMenu();
-sortMainLayoutLinks();
-displayStaticLinksIcons();
+sortResourceCardLinks();
+injectStaticLinkIcons();
+
+/* ==========================================================================
+   6. CUSTOM BOOKMARKS MANAGEMENT
+   ========================================================================== */
+
+/**
+ * Re-renders the bookmark tray in the header from the `savedLinks` array.
+ * Each entry displays a favicon icon linked to its URL, with a delete button.
+ * Clears and rebuilds the list on every call to stay in sync with state.
+ */
+function displayCustomLinks() {
+    customLinksList.innerHTML = '';
+
+    if (savedLinks.length === 0) return;
+
+    savedLinks.forEach((link, index) => {
+        let domain = '';
+        try {
+            domain = new URL(link.url).hostname;
+        } catch {
+            domain = '';
+        }
+
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <div class="link-wrapper" title="${link.name}">
+                <a href="${link.url}" target="_blank">
+                    <img src="${getFaviconUrl(domain)}" class="favicon" alt="${link.name}" onerror="this.style.display='none'">
+                </a>
+            </div>
+            <button class="delete-link-btn" onclick="deleteLink(${index})" aria-label="Delete Bookmark">×</button>
+        `;
+        customLinksList.appendChild(li);
+    });
+}
+
+/**
+ * Removes the bookmark at the given index from `savedLinks`, updates the
+ * display, and persists the change to the cloud (if authenticated).
+ *
+ * Exposed on `window` so inline `onclick` attributes in the tray HTML can
+ * reach it without a module import.
+ *
+ * @param {number} index - The zero-based position of the link to remove.
+ */
+window.deleteLink = function (index) {
+    savedLinks.splice(index, 1);
+    displayCustomLinks();
+    saveUserDataToCloud();
+};
+
+// Add new bookmark on form submission
+bookmarkForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    savedLinks.push({ name: linkName.value, url: linkUrl.value });
+    displayCustomLinks();
+    saveUserDataToCloud();
+    linkName.value = '';
+    linkUrl.value = '';
+});
+
+// Initial render (covers guest-mode data already in memory)
 displayCustomLinks();
 
 /* ==========================================================================
-   6. CATEGORY NAVIGATION FILTER ACTION
+   7. CATEGORY FILTER
    ========================================================================== */
+
 const menuItems = document.querySelectorAll('#category-menu li');
 
+/**
+ * Shows only the resource card matching `targetId`, or all cards when
+ * `targetId` is `'all'`.
+ *
+ * @param {string} targetId - The `id` attribute of the card to display, or `'all'`.
+ */
 function applyCategoryFilter(targetId) {
     resourceCards.forEach(card => {
-        if (targetId === 'all' || card.getAttribute('id') === targetId) {
-            card.style.display = "block";
-        } else {
-            card.style.display = "none";
-        }
+        card.style.display = (targetId === 'all' || card.id === targetId) ? 'block' : 'none';
     });
 }
 
@@ -340,30 +340,41 @@ menuItems.forEach(item => {
     item.addEventListener('click', () => {
         menuItems.forEach(i => i.classList.remove('active'));
         item.classList.add('active');
-        const target = item.getAttribute('data-target');
-        applyCategoryFilter(target);
+        applyCategoryFilter(item.getAttribute('data-target'));
     });
 });
 
 /* ==========================================================================
-   7. CLOUD DATA SYNCHRONIZATION (FIREBASE AUTH & FIRESTORE)
+   8. CLOUD DATA SYNCHRONIZATION (FIREBASE AUTH & FIRESTORE)
    ========================================================================== */
+
+/**
+ * Writes the current `savedLinks` array to the authenticated user's
+ * Firestore document. No-ops silently when no user is signed in.
+ */
 async function saveUserDataToCloud() {
     if (!window.auth.currentUser) return;
+
     try {
-        const userId = window.auth.currentUser.uid;
-        await setDoc(doc(window.db, "users", userId), {
+        await setDoc(doc(window.db, "users", window.auth.currentUser.uid), {
             links: savedLinks,
             updatedAt: new Date()
         });
-        console.log("Cloud synchronized successfully!");
-    } catch (e) {
-        console.error("Error syncing with cloud: ", e);
+        console.log("Cloud sync successful.");
+    } catch (error) {
+        console.error("Cloud sync failed:", error);
     }
 }
 
+/**
+ * Responds to Firebase auth state changes.
+ *
+ * - Signed in:  Shows the user profile, loads bookmarks from Firestore.
+ * - Signed out: Shows the login button, clears the bookmark tray.
+ */
 onAuthStateChanged(window.auth, async (user) => {
     if (user) {
+        // Update header UI to reflect the signed-in user
         loginBtn.style.display = 'none';
         userProfileContainer.style.display = 'flex';
 
@@ -377,19 +388,21 @@ onAuthStateChanged(window.auth, async (user) => {
             userAvatar.style.display = 'none';
         }
 
+        // Fetch bookmarks from Firestore; create a blank doc for new users
         const docRef = doc(window.db, "users", user.uid);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-            const data = docSnap.data();
-            savedLinks = data.links || [];
+            savedLinks = docSnap.data().links ?? [];
         } else {
             savedLinks = [];
             await saveUserDataToCloud();
         }
 
         displayCustomLinks();
+
     } else {
+        // Reset header to signed-out state
         loginBtn.style.display = 'block';
         userProfileContainer.style.display = 'none';
         userNameSpan.textContent = '';
@@ -399,58 +412,54 @@ onAuthStateChanged(window.auth, async (user) => {
     }
 });
 
-// Authentication Primary Call Trigger Hooks
-logoutBtn.onclick = () => {
+// Auth action handlers
+loginBtn.onclick = () => signInWithPopup(window.auth, provider);
+logoutBtn.onclick = () =>
     signOut(window.auth)
-        .then(() => closeAllDropdowns())
-        .catch((error) => console.error("Logout Error:", error));
-};
-
-loginBtn.onclick = () => {
-    signInWithPopup(window.auth, provider);
-};
+        .then(closeAllDropdowns)
+        .catch((error) => console.error("Logout error:", error));
 
 /* ==========================================================================
-   8. QUICK ADD LINK MODAL SYSTEM
+   9. BOOKMARK MODAL
    ========================================================================== */
+
 const modal = document.getElementById('add-link-modal');
 const openModalBtn = document.getElementById('open-modal-btn');
 const closeModalBtn = document.getElementById('close-modal-btn');
 
-openModalBtn.addEventListener('click', () => {
-    modal.classList.add('show');
-});
+/** Opens the Add Bookmark modal. */
+function openModal() { modal.classList.add('show'); }
 
-const closeModal = () => {
-    modal.classList.remove('show');
-};
+/** Closes the Add Bookmark modal. */
+function closeModal() { modal.classList.remove('show'); }
 
+openModalBtn.addEventListener('click', openModal);
 closeModalBtn.addEventListener('click', closeModal);
 
+// Close on backdrop click
 modal.addEventListener('click', (e) => {
-    if (e.target === modal) {
-        closeModal();
-    }
+    if (e.target === modal) closeModal();
 });
 
+// Close and reset form after a successful submission
 bookmarkForm.addEventListener('submit', () => {
-    modal.classList.remove('show');
-    setTimeout(() => {
-        bookmarkForm.reset();
-    }, 100);
+    closeModal();
+    setTimeout(() => bookmarkForm.reset(), 100);
 });
 
 /* ==========================================================================
-   9. DYNAMIC MASONRY GRID LAYOUT
+   10. MASONRY GRID LAYOUT
    ========================================================================== */
-function applyMasonryLayout() {
-    const cards = document.querySelectorAll('.card');
 
-    cards.forEach(card => {
+/**
+ * Calculates and applies `grid-row-end: span N` to each card so the CSS
+ * masonry grid can pack cards tightly without fixed row heights.
+ * Must be re-run whenever card content changes or the viewport is resized.
+ */
+function applyMasonryLayout() {
+    document.querySelectorAll('.card').forEach(card => {
         card.style.gridRowEnd = 'auto';
-        const cardHeight = card.offsetHeight;
-        const rowSpan = Math.ceil(cardHeight + 16);
-        card.style.gridRowEnd = `span ${rowSpan}`;
+        card.style.gridRowEnd = `span ${Math.ceil(card.offsetHeight + 16)}`;
     });
 }
 
