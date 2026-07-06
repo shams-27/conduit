@@ -810,3 +810,261 @@ body {
     font-family: inherit;
     box-sizing: border-box;
 }
+
+/* ==========================================================================
+   10. GHOST CARD (NEW CARD TRIGGER)
+   ========================================================================== */
+
+.ghost-card {
+    background: transparent;
+    border: 2px dashed rgba(255, 239, 179, 0.2);
+    box-shadow: none;
+    cursor: pointer;
+    transition: border-color 0.2s, background-color 0.2s, transform 0.2s;
+    min-height: 80px;
+}
+
+.ghost-card:hover {
+    border-color: rgba(255, 239, 179, 0.5);
+    background-color: rgba(255, 239, 179, 0.04);
+    transform: translateY(-2px);
+    box-shadow: none;
+}
+
+.ghost-card-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 24px 0;
+    user-select: none;
+}
+
+.ghost-card-icon {
+    font-size: 1.6rem;
+    color: rgba(255, 239, 179, 0.3);
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.ghost-card-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 239, 179, 0.3);
+    transition: color 0.2s;
+}
+
+.ghost-card:hover .ghost-card-icon,
+.ghost-card:hover .ghost-card-label {
+    color: rgba(255, 239, 179, 0.7);
+}
+
+/* ==========================================================================
+   11. CUSTOM CARD — EDIT BUTTON
+   ========================================================================== */
+
+/* Edit pencil button — positioned in card top-right, shown on hover */
+.card-edit-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid var(--glass-border);
+    border-radius: 6px;
+    color: var(--text-muted);
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s, background-color 0.15s, color 0.15s;
+    z-index: 5;
+}
+
+/* Card must be position: relative for the button to anchor correctly */
+.card.custom-card {
+    position: relative;
+}
+
+.card.custom-card:hover .card-edit-btn {
+    opacity: 1;
+}
+
+.card-edit-btn:hover {
+    background-color: rgba(255, 239, 179, 0.15);
+    color: var(--accent-butter);
+    border-color: rgba(255, 239, 179, 0.3);
+}
+
+/* ==========================================================================
+   12. DRAG-AND-DROP STATES
+   ========================================================================== */
+
+.card[draggable="true"] {
+    cursor: grab;
+}
+
+.card[draggable="true"]:active {
+    cursor: grabbing;
+}
+
+/* Card being dragged — faded out in its original slot */
+.card--dragging {
+    opacity: 0.4;
+    transform: scale(0.98);
+    box-shadow: none !important;
+}
+
+/* Drop target highlight */
+.card--drag-over {
+    border-color: rgba(255, 239, 179, 0.5) !important;
+    background-color: rgba(255, 239, 179, 0.05) !important;
+    box-shadow: 0 0 0 2px rgba(255, 239, 179, 0.2) !important;
+}
+
+/* ==========================================================================
+   13. EDIT CARD MODAL EXTRAS
+   ========================================================================== */
+
+/* Wider modal for the edit card panel */
+.modal-content--wide {
+    max-width: 480px;
+}
+
+/* Label above form sections */
+.modal-label,
+.modal-section-label {
+    display: block;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+.modal-section-label {
+    margin-top: 4px;
+}
+
+/* Inline row: input + button side by side */
+.input-row {
+    display: flex;
+    gap: 8px;
+}
+
+.input-row input {
+    flex: 1;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--glass-border);
+    border-radius: 6px;
+    color: var(--text-main);
+    font-family: inherit;
+    font-size: 0.9rem;
+    transition: border-color 0.2s;
+}
+
+.input-row input:focus {
+    border-color: var(--accent-butter);
+    outline: none;
+}
+
+/* Compact inline button used beside the rename input */
+.btn--inline {
+    width: auto;
+    padding: 0 16px;
+    flex-shrink: 0;
+    font-size: 0.85rem;
+}
+
+/* Edit modal link list */
+.edit-links-list {
+    list-style: none;
+    border: 1px solid var(--glass-border);
+    border-radius: 6px;
+    overflow: hidden;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.edit-link-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--glass-border);
+    font-size: 0.85rem;
+}
+
+.edit-link-row:last-child {
+    border-bottom: none;
+}
+
+.edit-link-name {
+    font-weight: 500;
+    color: var(--text-main);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.edit-link-url {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    text-decoration: none;
+}
+
+.edit-link-url:hover {
+    color: var(--accent-butter);
+}
+
+.edit-links-empty {
+    padding: 16px;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+/* Danger zone — delete card button at the bottom of the edit modal */
+.modal-danger-zone {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--glass-border);
+}
+
+/* Secondary button — used for sub-actions like "Add Link" inside a modal */
+.btn--secondary {
+    background-color: transparent;
+    color: var(--accent-butter);
+    border: 1px solid rgba(255, 239, 179, 0.3);
+    box-shadow: none;
+    font-weight: 500;
+}
+
+.btn--secondary:hover {
+    background-color: rgba(255, 239, 179, 0.08);
+    color: var(--accent-butter);
+    border-color: rgba(255, 239, 179, 0.55);
+    transform: translateY(-1px);
+}
+
+/* Danger/destructive button variant */
+.btn--danger {
+    background-color: rgba(255, 71, 87, 0.12);
+    color: var(--delete-red);
+    border: 1px solid rgba(255, 71, 87, 0.25);
+    box-shadow: none;
+}
+
+.btn--danger:hover {
+    background-color: rgba(255, 71, 87, 0.22);
+    color: #ff6b6b;
+    transform: translateY(-1px);
+}
