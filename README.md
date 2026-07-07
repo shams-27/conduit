@@ -53,7 +53,7 @@ conduit/
 No build step, no dependencies.
 
 ```bash
-git clone https://github.com/Shams-27/conduit.git
+git clone https://github.com/shams-27/conduit.git
 cd conduit
 ```
 
