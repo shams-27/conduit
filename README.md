@@ -2,6 +2,8 @@
 
 A clean, distraction-free study space for DIU students — everything you need for a productive session, in one browser tab.
 
+![Conduit screenshot](conduit.png)
+
 **Live demo:** [shams-27.github.io/conduit](https://shams-27.github.io/conduit/)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/shams-27/conduit/blob/main/LICENSE)
