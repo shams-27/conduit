@@ -454,7 +454,7 @@ function applyMasonryLayout() {
 
     const columnCount = getComputedStyle(grid).gridTemplateColumns.split(' ').length;
     const columnHeights = new Array(columnCount).fill(0);
-    const ROW_GAP = 16; // vertical spacing between stacked cards in a column
+    const ROW_GAP = 24; // vertical spacing between stacked cards in a column
 
     cards.forEach(card => {
         // Find the currently shortest column
