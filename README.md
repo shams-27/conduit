@@ -6,8 +6,6 @@ A clean, distraction-free study space for DIU students — everything you need f
 
 **Live demo:** [shams-27.github.io/conduit](https://shams-27.github.io/conduit/)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/shams-27/conduit/blob/main/LICENSE)
-
 ---
 
 ## Table of Contents
@@ -103,10 +101,6 @@ Contributions, issues, and feature requests are welcome.
 3. Commit your changes (`git commit -m 'Add some amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a pull request
-
-## License
-
-Distributed under the [MIT License](https://github.com/shams-27/conduit/blob/main/LICENSE).
 
 ---
 
