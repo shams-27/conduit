@@ -4,7 +4,7 @@ A personal start page / dashboard that brings your most-used links, tools, and d
 
 ![Conduit demo screenshot](./conduit.png)
 
-🔗 **Live demo / homepage:** shams-27.github.io/conduit/
+🔗 **Live demo / homepage:** [shams-27.github.io/conduit/](https://shams-27.github.io/conduit/)
 
 ## Why Conduit?
 
