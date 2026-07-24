@@ -1,107 +1,83 @@
 # Conduit
 
-A clean, distraction-free study space for DIU students — everything you need for a productive session, in one browser tab.
+A personal start page / dashboard that brings your most-used links, tools, and daily planning into a single dark-themed hub. Built as a static site with Firebase for optional cloud sync.
 
-![Conduit screenshot](conduit.png)
+![Conduit demo screenshot](./conduit.png)
 
-**Live demo:** [shams-27.github.io/conduit](https://shams-27.github.io/conduit/)
-
----
-
-## Table of Contents
-
-- [Overview](#overview)
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
-- [Getting Started](#getting-started)
-- [Deploying Your Own Instance](#deploying-your-own-instance)
-- [Contributing](#contributing)
-- [License](#license)
-
----
-
-## Overview
-
-Conduit is a personal browser start page built around the daily workflow of a DIU (Daffodil International University) student. Instead of hunting across tabs for the Student Portal, BLC, or study tools, Conduit brings everything onto a single, organized page — complete with a custom bookmark manager and Google-account sync, so your setup follows you across devices.
+🔗 **Live demo / homepage:** shams-27.github.io/conduit/
 
 ## Features
 
-| Feature | Description |
-|---|---|
-| **DIU Hub** | One-click access to the Student Portal, BLC, Campus Schedule, DIU Routine, Notice Board, and Academic Calendar |
-| **Organized Study Links** | Curated sections for AI Assistants, Learning & Media, Google Tools, Toolbox, Communication, and Career resources |
-| **Custom Bookmarks** | Add your own links through a simple modal — saved and ready every session |
-| **Google Sync** | Sign in with Google to sync custom bookmarks across all your devices |
-| **Guest Mode** | No login required — links are stored locally until you're ready to sync |
-| **Distraction-Free** | No ads, no feeds, no noise — just your tools |
+- **Curated resource grid** — Links organized into cards by category (AI tools, learning platforms, DSA/competitive programming judges, dev tools, productivity apps, and more), so everything you reach for daily is one click away.
+- **Quick bookmark tray** — Add, save, and delete your own custom shortcuts directly from the header without editing any code.
+- **DIU Hub dropdown** — One-click access to Daffodil International University's student portal, result page, e-learning (BLC), routine, notice board, academic calendar, and QBank.
+- **Built-in calendar** — A lightweight month-view calendar with previous/next navigation, accessible from the header.
+- **Google sign-in with cloud sync** — Log in with your Google account (via Firebase Authentication) to save your custom bookmarks to Firestore and access them from any device. Without login, bookmarks are stored locally in the browser.
+- **Responsive masonry layout** — Cards automatically reflow to fill the available space.
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Markup | HTML5 |
-| Styling | CSS3 |
-| Logic | Vanilla JavaScript (ES6) |
-| Auth & Sync | Google OAuth / Firebase |
-| Hosting | GitHub Pages |
+- **HTML5 / CSS3** — Semantic markup styled with CSS custom properties, JetBrains Mono typography, and a card-based dark theme.
+- **Vanilla JavaScript (ES Modules)** — No frontend framework or build step required.
+- **Firebase**
+  - Authentication (Google Sign-In)
+  - Firestore (per-user bookmark storage)
+
+## Getting Started
+
+### Prerequisites
+
+- A modern web browser
+- (Optional, for cloud sync) A [Firebase](https://firebase.google.com/) project with **Authentication** (Google provider) and **Firestore** enabled
+
+### Run locally
+
+1. Clone the repository
+   ```bash
+   git clone https://github.com/shams-27/conduit.git
+   cd conduit
+   ```
+2. Open `index.html` directly in your browser, or serve the folder with any static file server, e.g.:
+   ```bash
+   npx serve .
+   ```
+3. Visit the served URL (or the opened file) in your browser.
+
+### Enabling cloud sync (optional)
+
+The app ships pointed at a demo Firebase project. To use your own:
+
+1. Create a project in the [Firebase Console](https://console.firebase.google.com/).
+2. Enable **Authentication → Sign-in method → Google**.
+3. Enable **Firestore Database**.
+4. Replace the `firebaseConfig` object in `index.html` with your project's config values.
 
 ## Project Structure
 
 ```
 conduit/
-├── index.html      # Layout and bookmark sections
-├── style.css       # Styling and responsive design
-├── script.js       # Auth, sync, and bookmark logic
-├── fonts/          # Custom font assets
-└── cursors/        # Custom cursor assets
+├── index.html   # Markup, layout, and Firebase config
+├── style.css    # Theme, layout, and component styling
+├── script.js    # Dropdowns, calendar, bookmarks, auth, and Firestore sync logic
+└── README.md
 ```
 
-## Getting Started
+## Usage
 
-Conduit has no build step and no external dependencies.
-
-### Clone the repository
-
-```bash
-git clone https://github.com/shams-27/conduit.git
-cd conduit
-```
-
-### Run locally
-
-You can open `index.html` directly in a browser to preview the layout. However, **Google login requires an HTTP/HTTPS context**, so for full functionality serve the project locally instead:
-
-```bash
-# Using Python
-python -m http.server 8080
-
-# Using Node
-npx serve .
-```
-
-Then visit `http://localhost:8080` in your browser.
-
-## Deploying Your Own Instance
-
-1. Fork this repository.
-2. Go to **Settings → Pages** in your fork.
-3. Set the source to the `main` branch, root (`/`) directory.
-4. Your personal study space will be live at:
-   ```
-   https://<your-username>.github.io/conduit/
-   ```
+- Click any card link to open it in a new tab.
+- Use the **+** button in the header tray to add a personal quick-access bookmark.
+- Click **DIU Hub** or the calendar icon to open their respective dropdowns.
+- Click **Login with Google** to sync your bookmarks across devices.
 
 ## Contributing
 
-Contributions, issues, and feature requests are welcome.
+Issues and pull requests are welcome. If you'd like to add a new resource card or link category, feel free to open a PR.
 
-1. Fork the project
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a pull request
+## License
 
----
+This project currently has no license specified. All rights reserved by the author unless stated otherwise.
 
-<p align="center">Built for the DIU community, by <a href="https://github.com/shams-27">shams-27</a></p>
+## Author
+
+**Shams Kabir**
+[GitHub](https://github.com/shams-27) · [Repository](https://github.com/shams-27/conduit)
