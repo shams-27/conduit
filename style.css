@@ -98,13 +98,13 @@ body {
 }
 
 /* ==========================================================================
-   3. HEADER DROPDOWNS (DIU HUB & USER PROFILE)
+   3. HEADER DROPDOWNS (DIU HUB)
    ========================================================================== */
 
 /* Shared container shell for both hub and calendar dropdowns */
 .hub-dropdown-container {
     position: relative;
-    height: 42px;
+    height: 48px;
     cursor: pointer;
     user-select: none;
     flex-shrink: 0;
@@ -114,13 +114,13 @@ body {
 .hub-trigger {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 0 16px;
+    gap: 10px;
+    padding: 0 20px;
     height: 100%;
     background-color: var(--card-bg);
     border: 1px solid var(--glass-border);
     border-radius: 6px;
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     font-weight: 500;
     color: var(--accent-butter);
     transition: border-color 0.2s ease, background-color 0.2s ease;
@@ -133,7 +133,7 @@ body {
 }
 
 .hub-arrow {
-    font-size: 0.6rem;
+    font-size: 0.7rem;
     color: var(--text-muted);
     transition: transform 0.2s ease;
 }
@@ -142,9 +142,8 @@ body {
     transform: rotate(180deg);
 }
 
-/* Shared base styles for hub menu and profile dropdown panel */
-.hub-menu,
-.dropdown-menu {
+/* Hub menu dropdown panel */
+.hub-menu {
     display: none;
     position: absolute;
     top: 48px;
@@ -161,10 +160,8 @@ body {
     border-radius: 6px;
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
     z-index: 1100 !important;
-}
 
-.hub-menu {
-    width: 200px;
+    width: 220px;
     padding: 4px 0;
 }
 
@@ -173,7 +170,9 @@ body {
 }
 
 .hub-item {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 10px;
     padding: 10px 16px;
     font-size: 0.85rem;
     color: var(--text-main);
@@ -187,59 +186,23 @@ body {
     color: var(--accent-butter);
 }
 
-/* User profile dropdown panel */
-.dropdown-menu {
-    width: 100%;
-    min-width: 180px;
+.hub-item-icon {
+    flex-shrink: 0;
+    color: var(--text-muted);
+    transition: color 0.2s;
 }
 
-.dropdown-menu.show {
-    display: block;
+.hub-item span {
+    white-space: nowrap;
 }
 
-.dropdown-item {
-    padding: 10px 14px;
-    font-size: 0.8rem;
-    color: var(--text-main);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: none;
-    border: none;
-    width: 100%;
-    cursor: pointer;
-    font-family: inherit;
-    transition: background-color 0.2s;
+.hub-item:hover .hub-item-icon {
+    color: var(--accent-butter);
 }
 
-.dropdown-item:hover {
-    background-color: rgba(255, 255, 255, 0.05);
-}
-
-/* Separator lines between menu items */
-.hub-item:not(:last-child),
-.dropdown-menu .dropdown-item:not(:last-child):not(.sync-status) {
+/* Separator lines between hub menu items */
+.hub-item:not(:last-child) {
     border-bottom: 1px solid var(--glass-border) !important;
-}
-
-.dropdown-divider {
-    border: 0;
-    border-top: 1px solid var(--glass-border);
-    margin: 0;
-}
-
-.logout-action {
-    color: var(--delete-red);
-    font-weight: 600;
-}
-
-/* Cloud sync indicator dot */
-.status-dot {
-    width: 6px;
-    height: 6px;
-    background-color: #4cd137;
-    border-radius: 50%;
-    box-shadow: 0 0 5px #4cd137;
 }
 
 /* ==========================================================================
@@ -352,91 +315,30 @@ body {
 }
 
 /* ==========================================================================
-   5. HEADER AUTH & USER PROFILE SECTION
+   5. CALENDAR DROPDOWN WIDGET
    ========================================================================== */
-
-.header-actions {
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
-    padding-left: 16px;
-    border-left: 1px solid var(--glass-border);
-    margin-left: 16px;
-}
-
-.auth-container {
-    display: flex;
-    align-items: center;
-}
-
-.login-header-btn {
-    padding: 10px 18px !important;
-    font-size: 0.85rem;
-    height: 42px;
-    white-space: nowrap;
-}
-
-#user-profile {
-    background-color: var(--card-bg);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border);
-    border-radius: 6px;
-    position: relative;
-    width: 180px;
-    height: 42px;
-    cursor: pointer;
-    user-select: none;
-    transition: border-color 0.2s ease, background-color 0.2s ease;
-}
-
-#user-profile:hover {
-    border-color: rgba(255, 255, 255, 0.2);
-    background-color: rgba(1, 45, 40, 0.6);
-}
-
-.profile-trigger {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    height: 100%;
-    padding: 0 12px;
-    gap: 8px;
-}
-
-.user-avatar {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    border: 2px solid var(--accent-butter);
-}
-
-#user-name {
-    font-size: 0.8rem;
-    color: var(--accent-butter);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    flex-grow: 1;
-}
 
 .dropdown-arrow {
-    font-size: 0.6rem;
+    font-size: 0.7rem;
     color: var(--text-muted);
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
 }
 
-#user-profile.active .dropdown-arrow {
-    transform: rotate(180deg);
+.calendar-current-date {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--accent-butter);
+    white-space: nowrap;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
 }
-
-/* ==========================================================================
-   6. CALENDAR DROPDOWN WIDGET
-   ========================================================================== */
 
 .calendar-dropdown-container {
     position: relative;
-    height: 42px;
+    height: 48px;
     cursor: pointer;
     user-select: none;
     flex-shrink: 0;
@@ -446,14 +348,15 @@ body {
 .calendar-trigger {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 0 16px;
+    gap: 10px;
+    padding: 0 20px;
     height: 100%;
     background-color: var(--card-bg);
     border: 1px solid var(--glass-border);
     border-radius: 6px;
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     color: var(--accent-butter);
+    line-height: 1;
     transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
@@ -567,8 +470,8 @@ body {
 }
 
 .calendar-trigger svg {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     stroke: var(--accent-butter);
     display: block;
 }
