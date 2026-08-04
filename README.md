@@ -1,5 +1,7 @@
 # Conduit
 
+![Conduit](conduit.png)
+
 **A single, distraction-free start page for the DIU student workflow.**
 
 Live: [shams-27.github.io/conduit](https://shams-27.github.io/conduit/)
