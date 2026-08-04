@@ -1,6 +1,3 @@
-import { GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
 /* ==========================================================================
    1. DOM ELEMENT SELECTORS & GLOBAL CONFIGURATION
    ========================================================================== */
@@ -14,15 +11,6 @@ const linkName = document.getElementById('link-name');
 const linkUrl = document.getElementById('link-url');
 const customLinksList = document.getElementById('custom-links-list');
 
-// Auth elements
-const loginBtn = document.getElementById('login-btn');
-const userProfileContainer = document.getElementById('user-profile');
-const profileTrigger = document.getElementById('profile-trigger');
-const dropdownMenu = document.getElementById('dropdown-menu');
-const userNameSpan = document.getElementById('user-name');
-const userAvatar = document.getElementById('user-avatar');
-const logoutBtn = document.getElementById('logout-btn');
-
 // Calendar elements
 const calendarDropdown = document.getElementById('calendar-dropdown');
 const calendarTrigger = document.getElementById('calendar-trigger');
@@ -32,9 +20,6 @@ const calendarMenu = document.getElementById('calendar-menu');
 const hubDropdown = document.getElementById('diu-hub-dropdown');
 const hubTrigger = document.getElementById('hub-trigger');
 const hubMenu = document.getElementById('hub-menu');
-
-// Firebase Auth provider
-const provider = new GoogleAuthProvider();
 
 /**
  * Custom favicon overrides for domains where Google's favicon service
@@ -53,9 +38,10 @@ const CUSTOM_ICON_MAP = {
     "www.leetcode.com": "https://img.icons8.com/?size=100&id=wDGo581Ea5Nf&format=png&color=000000",
     "www.evernote.com": "https://img.icons8.com/?size=100&id=HsV0BZAmh5Qy&format=png&color=000000",
     "www.codeforces.com": "https://img.icons8.com/?size=100&id=jldAN67IAsrW&format=png&color=000000",
+    "onedrive.live.com": "https://img.icons8.com/?size=100&id=4SkJHbAlDawt&format=png&color=000000"
 };
 
-// In-memory tray bookmark store; populated from localStorage or Firestore.
+// In-memory tray bookmark store; populated from and persisted to localStorage.
 let savedLinks = [];
 
 /* ==========================================================================
@@ -78,8 +64,6 @@ function getFaviconUrl(domain) {
  * Called on any outside click to reset the header to its default state.
  */
 function closeAllDropdowns() {
-    dropdownMenu.classList.remove('show');
-    userProfileContainer.classList.remove('active');
     hubMenu.classList.remove('show');
     hubDropdown.classList.remove('active');
     calendarMenu.classList.remove('show');
@@ -141,12 +125,11 @@ function toggleDropdown(e, menuToToggle, triggerParent) {
     }
 }
 
-profileTrigger.addEventListener('click', (e) => toggleDropdown(e, dropdownMenu, userProfileContainer));
 hubTrigger.addEventListener('click', (e) => toggleDropdown(e, hubMenu, hubDropdown));
 calendarTrigger.addEventListener('click', (e) => toggleDropdown(e, calendarMenu, calendarDropdown));
 
 // Prevent clicks inside open menus from bubbling to the document
-[calendarMenu, hubMenu, dropdownMenu].forEach(menu => {
+[calendarMenu, hubMenu].forEach(menu => {
     menu.addEventListener('click', (e) => e.stopPropagation());
 });
 
@@ -160,9 +143,24 @@ const monthYearDisplay = document.getElementById('calendar-month-year');
 const calendarDaysContainer = document.getElementById('calendar-days');
 const prevMonthBtn = document.getElementById('prev-month');
 const nextMonthBtn = document.getElementById('next-month');
+const calendarCurrentDate = document.getElementById('calendar-current-date');
 
 // Tracks which month/year is currently displayed in the calendar widget.
 let calendarDate = new Date();
+
+/**
+ * Displays today's date (date/month/year) in the calendar trigger,
+ * between the calendar icon and the dropdown arrow.
+ */
+function renderCurrentDateLabel() {
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const year = today.getFullYear();
+    calendarCurrentDate.textContent = `${day}/${month}/${year}`;
+}
+
+renderCurrentDateLabel();
 
 /**
  * Renders the calendar grid for the month stored in `calendarDate`.
@@ -346,89 +344,43 @@ bookmarkForm.addEventListener('submit', () => {
 });
 
 /* ==========================================================================
-   9. CLOUD DATA SYNCHRONIZATION (FIREBASE AUTH & FIRESTORE)
+   9. LOCAL BOOKMARK PERSISTENCE (localStorage)
    ========================================================================== */
 
-/**
- * Writes `savedLinks` to the authenticated user's Firestore document.
- * No-ops silently when no user is signed in (guest data stays local).
- */
-async function saveUserData() {
-    if (!window.auth?.currentUser) return;
+const LINKS_STORAGE_KEY = 'conduit.customLinks';
 
+/**
+ * Writes `savedLinks` to localStorage so bookmarks persist across sessions
+ * on this device/browser.
+ */
+function saveUserData() {
     try {
-        await setDoc(doc(window.db, "users", window.auth.currentUser.uid), {
-            links: savedLinks,
-            updatedAt: new Date(),
-        });
-        console.log("Cloud sync successful.");
+        localStorage.setItem(LINKS_STORAGE_KEY, JSON.stringify(savedLinks));
     } catch (error) {
-        console.error("Cloud sync failed:", error);
+        console.error("Local save failed:", error);
     }
 }
 
 /**
- * Loads the user's bookmark tray links and applies them.
- * Prefers Firestore when signed in; guests get an empty tray.
- *
- * @param {import("firebase/auth").User|null} user
+ * Loads bookmark tray links from localStorage and applies them.
  */
-async function loadAndApplyUserData(user) {
-    let data = { links: [] };
+function loadAndApplyUserData() {
+    let links = [];
 
-    if (user) {
-        // Signed in — fetch from Firestore
-        const docRef = doc(window.db, "users", user.uid);
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-            const d = docSnap.data();
-            data.links = d.links ?? [];
-        } else {
-            // First-time sign-in — seed with empty doc
-            await saveUserData();
-        }
+    try {
+        const raw = localStorage.getItem(LINKS_STORAGE_KEY);
+        if (raw) links = JSON.parse(raw);
+    } catch (error) {
+        console.error("Local load failed:", error);
     }
 
-    savedLinks = data.links;
+    savedLinks = Array.isArray(links) ? links : [];
 
     displayCustomLinks();
     applyMasonryLayout();
 }
 
-/**
- * Responds to Firebase auth state changes.
- * Updates the header UI and triggers a full data load/unload.
- */
-onAuthStateChanged(window.auth, async (user) => {
-    if (user) {
-        loginBtn.style.display = 'none';
-        userProfileContainer.style.display = 'flex';
-
-        const firstName = user.displayName ? user.displayName.split(' ')[0] : 'User';
-        userNameSpan.textContent = `Hi, ${firstName}`;
-
-        if (user.photoURL) {
-            userAvatar.src = user.photoURL;
-            userAvatar.style.display = 'block';
-        } else {
-            userAvatar.style.display = 'none';
-        }
-    } else {
-        loginBtn.style.display = 'block';
-        userProfileContainer.style.display = 'none';
-        userNameSpan.textContent = '';
-    }
-
-    await loadAndApplyUserData(user);
-});
-
-// Auth action handlers
-loginBtn.onclick = () => signInWithPopup(window.auth, provider);
-logoutBtn.onclick = () =>
-    signOut(window.auth)
-        .then(closeAllDropdowns)
-        .catch((error) => console.error("Logout error:", error));
+loadAndApplyUserData();
 
 /* ==========================================================================
    10. MASONRY GRID LAYOUT
