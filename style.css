@@ -496,16 +496,14 @@ body {
     align-items: start;
 }
 
-/* Force exactly 7 equal-width columns on wide (1920-class) screens,
-   instead of relying on fixed pixel math against auto-fill */
+/* 7 columns on wide screens */
 @media (min-width: 1600px) {
     .resources-grid {
         grid-template-columns: repeat(7, 1fr);
     }
 }
 
-/* Step up further on wider-than-1920 / ultrawide monitors, where there's
-   genuinely more room to spread into additional columns */
+/* 8 columns on ultrawide screens */
 @media (min-width: 2000px) {
     .resources-grid {
         grid-template-columns: repeat(8, 1fr);
