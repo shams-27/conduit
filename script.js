@@ -21,10 +21,7 @@ const hubDropdown = document.getElementById('diu-hub-dropdown');
 const hubTrigger = document.getElementById('hub-trigger');
 const hubMenu = document.getElementById('hub-menu');
 
-/**
- * Custom favicon overrides for domains where Google's favicon service
- * returns a low-quality or incorrect icon.
- */
+// Favicon overrides for domains with poor default icons
 const CUSTOM_ICON_MAP = {
     "docs.google.com": "https://img.icons8.com/?size=100&id=hHRwFYjODaR4&format=png&color=000000",
     "sheets.google.com": "https://img.icons8.com/?size=100&id=qrAVeBIrsjod&format=png&color=000000",
@@ -41,7 +38,7 @@ const CUSTOM_ICON_MAP = {
     "onedrive.live.com": "https://img.icons8.com/?size=100&id=4SkJHbAlDawt&format=png&color=000000"
 };
 
-// In-memory tray bookmark store; populated from and persisted to localStorage.
+// In-memory bookmark store, synced with localStorage
 let savedLinks = [];
 
 /* ==========================================================================
@@ -49,20 +46,15 @@ let savedLinks = [];
    ========================================================================== */
 
 /**
- * Returns the best available favicon URL for a given domain.
- * Falls back to Google's favicon service when no custom override exists.
- *
- * @param {string} domain - The hostname of the target URL.
- * @returns {string} A URL pointing to the favicon image.
+ * Resolves the favicon URL for a domain.
+ * @param {string} domain
+ * @returns {string}
  */
 function getFaviconUrl(domain) {
     return CUSTOM_ICON_MAP[domain] ?? `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
 }
 
-/**
- * Closes all open navigation dropdowns and removes their active states.
- * Called on any outside click to reset the header to its default state.
- */
+/** Closes all open navigation dropdowns. */
 function closeAllDropdowns() {
     hubMenu.classList.remove('show');
     hubDropdown.classList.remove('active');
@@ -76,7 +68,7 @@ function closeAllDropdowns() {
 
 /**
  * Opens a modal overlay by ID.
- * @param {string} id - The element ID of the modal overlay.
+ * @param {string} id
  */
 function openModal(id) {
     document.getElementById(id)?.classList.add('show');
@@ -84,14 +76,13 @@ function openModal(id) {
 
 /**
  * Closes a modal overlay by ID.
- * @param {string} id - The element ID of the modal overlay.
+ * @param {string} id
  */
 function closeModal(id) {
     document.getElementById(id)?.classList.remove('show');
 }
 
-// Generic close-button handler — any button with data-close="<modal-id>"
-// will close that modal without needing individual event listeners.
+// Closes a modal via any [data-close] button
 document.querySelectorAll('[data-close]').forEach(btn => {
     btn.addEventListener('click', () => closeModal(btn.dataset.close));
 });
@@ -108,12 +99,10 @@ document.querySelectorAll('.modal-overlay').forEach(overlay => {
    ========================================================================== */
 
 /**
- * Toggles a target dropdown while closing all others first.
- * Prevents click events from bubbling up to the document close listener.
- *
- * @param {Event}   e             - The originating click event.
- * @param {Element} menuToToggle  - The menu element to show/hide.
- * @param {Element} triggerParent - The container to mark as active.
+ * Toggles a dropdown, closing all others first.
+ * @param {Event} e
+ * @param {Element} menuToToggle
+ * @param {Element} triggerParent
  */
 function toggleDropdown(e, menuToToggle, triggerParent) {
     e.stopPropagation();
@@ -145,13 +134,10 @@ const prevMonthBtn = document.getElementById('prev-month');
 const nextMonthBtn = document.getElementById('next-month');
 const calendarCurrentDate = document.getElementById('calendar-current-date');
 
-// Tracks which month/year is currently displayed in the calendar widget.
+// Currently displayed calendar month
 let calendarDate = new Date();
 
-/**
- * Displays today's date (date/month/year) in the calendar trigger,
- * between the calendar icon and the dropdown arrow.
- */
+/** Renders today's date in the calendar trigger. */
 function renderCurrentDateLabel() {
     const today = new Date();
     const day = String(today.getDate()).padStart(2, '0');
@@ -162,11 +148,7 @@ function renderCurrentDateLabel() {
 
 renderCurrentDateLabel();
 
-/**
- * Renders the calendar grid for the month stored in `calendarDate`.
- * Highlights today's date and pads the grid with empty cells to align
- * the first day to the correct weekday column.
- */
+/** Renders the calendar grid for the active month. */
 function renderCalendar() {
     const year = calendarDate.getFullYear();
     const month = calendarDate.getMonth();
@@ -210,9 +192,7 @@ renderCalendar();
    6. STATIC LINK ENHANCEMENTS (ICONS & SORTING)
    ========================================================================== */
 
-/**
- * Alphabetically sorts all items in the DIU Hub dropdown by visible text.
- */
+/** Sorts DIU Hub items alphabetically. */
 function sortHubMenu() {
     const menu = document.getElementById('hub-menu');
     if (!menu) return;
@@ -221,9 +201,7 @@ function sortHubMenu() {
         .forEach(item => menu.appendChild(item));
 }
 
-/**
- * Alphabetically sorts the links within every built-in resource card.
- */
+/** Sorts each resource card's links alphabetically. */
 function sortResourceCardLinks() {
     document.querySelectorAll('.resources-grid .card').forEach(card => {
         const list = card.querySelector('.link-list');
@@ -238,14 +216,12 @@ function sortResourceCardLinks() {
     });
 }
 
-/**
- * Wraps each static link in a `.link-wrapper` div and prepends its favicon.
- */
+/** Adds favicons to static resource links. */
 function injectStaticLinkIcons() {
     const staticLinks = document.querySelectorAll('.card .link-list a');
 
     staticLinks.forEach(link => {
-        // Skip links already wrapped (e.g. after a re-render)
+        // Skip already-wrapped links
         if (link.parentElement.classList.contains('link-wrapper')) return;
 
         let domain = '';
@@ -275,10 +251,7 @@ injectStaticLinkIcons();
    7. TRAY BOOKMARK MANAGEMENT
    ========================================================================== */
 
-/**
- * Re-renders the bookmark tray from the `savedLinks` array.
- * Each entry displays a favicon linked to its URL with a delete button.
- */
+/** Re-renders the bookmark tray from savedLinks. */
 function displayCustomLinks() {
     customLinksList.innerHTML = '';
     if (savedLinks.length === 0) return;
@@ -301,11 +274,8 @@ function displayCustomLinks() {
 }
 
 /**
- * Removes a tray bookmark at the given index, updates the display,
- * and persists the change.
- * Exposed on `window` for use in inline onclick attributes.
- *
- * @param {number} index - Zero-based index of the bookmark to remove.
+ * Removes a tray bookmark at the given index.
+ * @param {number} index
  */
 window.deleteLink = function (index) {
     savedLinks.splice(index, 1);
@@ -349,10 +319,7 @@ bookmarkForm.addEventListener('submit', () => {
 
 const LINKS_STORAGE_KEY = 'conduit.customLinks';
 
-/**
- * Writes `savedLinks` to localStorage so bookmarks persist across sessions
- * on this device/browser.
- */
+/** Persists savedLinks to localStorage. */
 function saveUserData() {
     try {
         localStorage.setItem(LINKS_STORAGE_KEY, JSON.stringify(savedLinks));
@@ -361,9 +328,7 @@ function saveUserData() {
     }
 }
 
-/**
- * Loads bookmark tray links from localStorage and applies them.
- */
+/** Loads bookmarks from localStorage. */
 function loadAndApplyUserData() {
     let links = [];
 
@@ -386,19 +351,12 @@ loadAndApplyUserData();
    10. MASONRY GRID LAYOUT
    ========================================================================== */
 
-/**
- * Arranges all cards into a balanced masonry layout: each card is placed
- * into whichever column currently has the least content, so column
- * heights stay even instead of one column towering over its neighbors
- * (the browser's default grid auto-placement only avoids overlaps, it
- * doesn't try to balance column heights).
- * Re-run whenever card content changes or the viewport is resized.
- */
+/** Places each card into the shortest column for a balanced masonry layout. */
 function applyMasonryLayout() {
     const cards = Array.from(grid.querySelectorAll('.card'));
     if (cards.length === 0) return;
 
-    // Clear previous placement so each card's natural height is measured
+    // Reset placement to measure natural height
     cards.forEach(card => {
         card.style.gridColumn = '';
         card.style.gridRow = '';
