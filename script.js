@@ -34,7 +34,7 @@ const CUSTOM_ICON_MAP = {
     "claude.ai": "https://img.icons8.com/?size=100&id=zQjzFjPpT2Ek&format=png&color=000000",
     "www.leetcode.com": "https://img.icons8.com/?size=100&id=wDGo581Ea5Nf&format=png&color=000000",
     "www.evernote.com": "https://img.icons8.com/?size=100&id=HsV0BZAmh5Qy&format=png&color=000000",
-    "www.codeforces.com": "https://img.icons8.com/?size=100&id=jldAN67IAsrW&format=png&color=000000",
+    "codeforces.com": "https://img.icons8.com/?size=100&id=jldAN67IAsrW&format=png&color=000000",
     "onedrive.live.com": "https://img.icons8.com/?size=100&id=4SkJHbAlDawt&format=png&color=000000"
 };
 
