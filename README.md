@@ -39,7 +39,3 @@ A dropdown calendar right in the header, so checking a date or planning around a
 No ads, no news feeds, no algorithmic noise — just the tools a student actually needs, laid out clearly and ready to use.
 
 ---
-
-## License
-
-[MIT](https://github.com/shams-27/conduit/blob/main/LICENSE)
