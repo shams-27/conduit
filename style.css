@@ -133,13 +133,31 @@ body {
 }
 
 .hub-arrow {
-    font-size: 0.7rem;
+    flex-shrink: 0;
     color: var(--text-muted);
-    transition: transform 0.2s ease;
+    transition: color 0.2s ease;
 }
 
 .hub-dropdown-container.active .hub-arrow {
-    transform: rotate(180deg);
+    color: var(--accent-butter);
+}
+
+.hub-arrow-line {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: transform 0.25s ease, opacity 0.2s ease;
+}
+
+.hub-dropdown-container.active .hub-arrow-line-top {
+    transform: translateY(6px) rotate(45deg);
+}
+
+.hub-dropdown-container.active .hub-arrow-line-mid {
+    opacity: 0;
+}
+
+.hub-dropdown-container.active .hub-arrow-line-bottom {
+    transform: translateY(-6px) rotate(-45deg);
 }
 
 /* Hub menu dropdown panel */
@@ -324,6 +342,7 @@ body {
     line-height: 1;
     display: inline-flex;
     align-items: center;
+    transition: transform 0.2s ease;
 }
 
 .calendar-current-date {
