@@ -271,37 +271,61 @@ body {
     height: 100%;
 }
 
+/* Override the generic rectangular .link-wrapper:hover background (meant
+   for the full-width resource-card rows) — the tray icon gets its own
+   rounded highlight below instead. */
+.tray-links .link-wrapper:hover {
+    background-color: transparent;
+}
+
 .tray-links .favicon {
     width: 32px;
     height: 32px;
     background-color: transparent;
     padding: 2px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
     object-fit: contain;
 }
 
-/* Delete button — shown on hover via parent li */
+/* Hover highlight sized and shaped to the icon itself, not a square block */
+.tray-links li:hover .favicon {
+    background-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+/* Delete button — shown on hover/focus via parent li */
 .tray-links .delete-link-btn {
     position: absolute;
-    top: -4px;
-    right: -4px;
+    top: -6px;
+    right: -6px;
     background: var(--bg-dark);
-    border: 1px solid var(--glass-border);
+    border: 1.5px solid var(--delete-red);
     border-radius: 50%;
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
     padding: 0;
-    font-size: 11px;
-    line-height: 14px;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
     color: var(--delete-red);
     display: none;
     align-items: center;
     justify-content: center;
     z-index: 10;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+    transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
 }
 
-.tray-links li:hover .delete-link-btn {
+.tray-links .delete-link-btn:hover {
+    background-color: var(--delete-red);
+    color: var(--bg-dark);
+    transform: scale(1.15);
+}
+
+.tray-links li:hover .delete-link-btn,
+.tray-links li:focus-within .delete-link-btn {
     display: flex;
 }
 
