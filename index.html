@@ -26,7 +26,7 @@
 
                 <div class="hub-dropdown-container" id="diu-hub-dropdown">
                     <div class="hub-trigger" id="hub-trigger">
-                        <span>DIU Hub</span>
+                        <span>Campus Resources</span>
                         <svg class="hub-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                             stroke-linecap="round" stroke-linejoin="round">
@@ -37,6 +37,22 @@
                     </div>
                     <div class="hub-menu" id="hub-menu">
                         <!-- Populated from HUB_ITEMS in data.js -->
+                    </div>
+                </div>
+
+                <div class="hub-dropdown-container" id="diu-student-portal-dropdown">
+                    <div class="hub-trigger" id="student-portal-trigger">
+                        <span>Student Portal</span>
+                        <svg class="hub-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <line class="hub-arrow-line hub-arrow-line-top" x1="3" y1="6" x2="21" y2="6"></line>
+                            <line class="hub-arrow-line hub-arrow-line-mid" x1="3" y1="12" x2="21" y2="12"></line>
+                            <line class="hub-arrow-line hub-arrow-line-bottom" x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </div>
+                    <div class="hub-menu" id="student-portal-menu">
+                        <!-- Populated from STUDENT_PORTAL_ITEMS in data.js -->
                     </div>
                 </div>
 
@@ -66,7 +82,7 @@
                                         required>
                                 </div>
                                 <div class="input-group">
-                                    <input type="url" id="link-url" placeholder="URL (https://...)" required>
+                                    <input type="text" id="link-url" placeholder="URL (e.g. github.com)" required>
                                 </div>
                                 <button type="submit" class="btn" style="width: 100%; margin-top: 10px;">Save
                                     Link</button>
