@@ -47,6 +47,13 @@ document.querySelectorAll('.modal-overlay').forEach(overlay => {
     });
 });
 
+// Close the currently-open modal on Escape
+document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    const openOverlay = document.querySelector('.modal-overlay.show');
+    if (openOverlay) closeModal(openOverlay.id);
+});
+
 /* --------------------------------------------------------------------------
    3. NAVIGATION DROPDOWN CONTROLLER
    -------------------------------------------------------------------------- */
